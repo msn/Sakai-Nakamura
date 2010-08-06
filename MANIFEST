@@ -2,7 +2,17 @@ LICENSE
 Changes
 MANIFEST
 lib/Sakai/Nakamura.pm
+lib/Sakai/Nakamura/User.pm
+lib/Sakai/Nakamura/LDAPSynch.pm
+lib/Sakai/Nakamura/Content.pm
+lib/Sakai/Nakamura/Authn.pm
+lib/Sakai/Nakamura/Group.pm
 README
 Makefile.PL
 META.yml
+t/Sakai-Nakamura-Authn.t
+t/Sakai-Nakamura-LDAPSynch.t
+t/Sakai-Nakamura-Group.t
+t/Sakai-Nakamura-Content.t
 t/Sakai-Nakamura.t
+t/Sakai-Nakamura-User.t
