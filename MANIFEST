@@ -1,0 +1,8 @@
+LICENSE
+Changes
+MANIFEST
+lib/Sakai/Nakamura.pm
+README
+Makefile.PL
+META.yml
+t/Sakai-Nakamura.t
