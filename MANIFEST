@@ -3,9 +3,11 @@ Changes
 MANIFEST
 lib/Sakai/Nakamura.pm
 lib/Sakai/Nakamura/User.pm
+lib/Sakai/Nakamura/UserUtil.pm
 lib/Sakai/Nakamura/LDAPSynch.pm
 lib/Sakai/Nakamura/Content.pm
 lib/Sakai/Nakamura/Authn.pm
+lib/Sakai/Nakamura/AuthnUtil.pm
 lib/Sakai/Nakamura/Group.pm
 README
 Makefile.PL
@@ -14,5 +16,7 @@ t/Sakai-Nakamura-Authn.t
 t/Sakai-Nakamura-LDAPSynch.t
 t/Sakai-Nakamura-Group.t
 t/Sakai-Nakamura-Content.t
+t/Sakai-Nakamura-UserUtil.t
+t/Sakai-Nakamura-AuthnUtil.t
 t/Sakai-Nakamura.t
 t/Sakai-Nakamura-User.t
