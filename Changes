@@ -1,5 +1,8 @@
 Revision history for Perl extension Sakai::Nakamura.
 
+0.03  Tue Aug 10 20:10:00 2010
+	- Bringing across more code from Apache::Sling that was sakai specific.
+
 0.02  Fri Aug  6 16:25:00 2010
 	- Creating initial versions of the various subclasses.
         - Bringing across tests.

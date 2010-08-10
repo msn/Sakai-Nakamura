@@ -7,6 +7,7 @@ use strict;
 use warnings;
 use Carp;
 use base qw(Apache::Sling::User);
+use Sakai::Nakamura::UserUtil;
 
 require Exporter;
 
@@ -14,7 +15,7 @@ use base qw(Exporter);
 
 our @EXPORT_OK = ();
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 #{{{sub new
 
@@ -23,6 +24,24 @@ sub new {
     my $user = $class->SUPER::new(@args);
     bless $user, $class;
     return $user;
+}
+
+#}}}
+
+#{{{sub me
+sub me {
+    my ($user) = @_;
+    my $res =
+      Apache::Sling::Request::request( \$user,
+        Sakai::Nakamura::UserUtil::me_setup( $user->{'BaseURL'} ) );
+    my $success = Sakai::Nakamura::UserUtil::me_eval($res);
+    my $message = (
+        $success
+        ? ${$res}->content
+        : 'Problem fetching details for current user'
+    );
+    $user->set_results( "$message", $res );
+    return $success;
 }
 
 #}}}
