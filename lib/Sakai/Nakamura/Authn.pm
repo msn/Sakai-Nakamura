@@ -129,8 +129,6 @@ sub switch_user {
 
 #}}}
 
-#}}}
-
 #{{{sub login_user
 sub login_user {
     my ($authn) = @_;

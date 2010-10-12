@@ -4,6 +4,8 @@ package Sakai::Nakamura;
 use 5.008008;
 use strict;
 use warnings;
+use Carp;
+use base qw(Apache::Sling);
 
 require Exporter;
 
@@ -13,8 +15,15 @@ our @EXPORT_OK = ();
 
 our $VERSION = '0.03';
 
+#{{{sub new
+sub new {
+    my ( $class, @args ) = @_;
+    my $authn = $class->SUPER::new(@args);
+    bless $authn, $class;
+    return $authn;
+}
 
-# Preloaded methods go here.
+#}}}
 
 1;
 __END__
