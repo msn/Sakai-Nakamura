@@ -1,7 +1,7 @@
 --- #YAML:1.0
  name: Sakai-Nakamura
  abstract: Perl interface to Sakai Nakamura 
- version: 0.03
+ version: 0.04
  author:
    - Daniel Parry <perl@ddp.me.uk>
  license: perl

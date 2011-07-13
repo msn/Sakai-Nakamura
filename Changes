@@ -1,5 +1,8 @@
 Revision history for Perl extension Sakai::Nakamura.
 
+0.04  Wed Jul 13 11:45:00 2011
+	- Fixing creation of Nakamura Authn object in tests.
+
 0.03  Tue Aug 10 20:10:00 2010
 	- Bringing across more code from Apache::Sling that was sakai specific.
 

@@ -13,7 +13,7 @@ use base qw(Exporter);
 
 our @EXPORT_OK = ();
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 #{{{sub new
 sub new {
@@ -55,7 +55,7 @@ D. D. Parry, E<lt>perl@ddp.me.ukE<gt>
 
 =head1 VERSION
 
-0.03
+0.04
 
 =head1 LICENSE AND COPYRIGHT
 

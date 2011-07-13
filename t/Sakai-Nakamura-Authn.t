@@ -5,7 +5,8 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 11;
+use Test::More tests => 13;
+BEGIN { use_ok( 'Sakai::Nakamura' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::Authn' ); }
 
 #########################
@@ -13,7 +14,13 @@ BEGIN { use_ok( 'Sakai::Nakamura::Authn' ); }
 # Insert your test code below, the Test::More module is use()ed here so read
 # its man page ( perldoc Test::More ) for help writing this test script.
 
-my $authn = new Sakai::Nakamura::Authn('http://localhost:8080',undef,undef,'basic','1','log.txt');
+# nakamura object:
+my $nakamura = Sakai::Nakamura->new();
+isa_ok $nakamura, 'Sakai::Nakamura', 'nakamura';
+$nakamura->{'Verbose'} = 1;
+$nakamura->{'Log'} = 'log.txt';
+
+my $authn = new Sakai::Nakamura::Authn(\$nakamura);
 ok( $authn->{ 'BaseURL' } eq 'http://localhost:8080', 'Check BaseURL set' );
 ok( $authn->{ 'Type' }    eq 'basic',                 'Check Auth type set' );
 ok( $authn->{ 'Log' }     eq 'log.txt',               'Check Log set' );
