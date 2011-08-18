@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
 
-package Sakai::Nakamura::Content;
+package Sakai::Nakamura::Authz;
 
 use 5.008008;
 use strict;
 use warnings;
 use Carp;
 
-use base qw(Apache::Sling::Content);
+use base qw(Apache::Sling::Authz);
 
 require Exporter;
 
@@ -20,9 +20,9 @@ our $VERSION = '0.05';
 #{{{sub new
 sub new {
     my ( $class, @args ) = @_;
-    my $content = $class->SUPER::new(@args);
-    bless $content, $class;
-    return $content;
+    my $authz = $class->SUPER::new(@args);
+    bless $authz, $class;
+    return $authz;
 }
 
 #}}}
@@ -33,23 +33,23 @@ __END__
 
 =head1 NAME
 
-Sakai::Nakamura::Content - Manipulate Content in a Sakai Nakamura instance.
+Sakai::Nakamura::Authz - Manipulate Authz in a Sakai Nakamura instance.
 
 =head1 ABSTRACT
 
-content related functionality for Sling implemented over rest APIs.
+authz related functionality for Sling implemented over rest APIs.
 
 =head1 METHODS
 
 =head2 new
 
-Create, set up, and return a Content object.
+Create, set up, and return an Authz object.
 
 =head1 USAGE
 
 =head1 DESCRIPTION
 
-Perl library providing a layer of abstraction to the REST content methods
+Perl library providing a layer of abstraction to the REST authz methods
 
 =head1 REQUIRED ARGUMENTS
 

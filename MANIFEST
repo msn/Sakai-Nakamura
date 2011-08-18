@@ -1,6 +1,7 @@
 Changes
 lib/Sakai/Nakamura/Authn.pm
 lib/Sakai/Nakamura/AuthnUtil.pm
+lib/Sakai/Nakamura/Authz.pm
 lib/Sakai/Nakamura/Content.pm
 lib/Sakai/Nakamura/Group.pm
 lib/Sakai/Nakamura/LDAPSynch.pm
