@@ -6,6 +6,8 @@ use strict;
 use warnings;
 use Carp;
 use base qw(Apache::Sling);
+use Sakai::Nakamura::Authn;
+use Sakai::Nakamura::User;
 
 require Exporter;
 
@@ -19,6 +21,7 @@ our $VERSION = '0.05';
 sub new {
     my ( $class, @args ) = @_;
     my $authn = $class->SUPER::new(@args);
+
     # Set the Referer to /dev/integrationtests in order to be
     # allowed to post to the Sakai Nakamura instance:
     $authn->{'Referer'} = "/dev/integrationtests";
@@ -27,6 +30,48 @@ sub new {
 }
 
 #}}}
+
+#{{{sub user_config
+
+sub user_config {
+    my ($class) = @_;
+    my $profile_field;
+    my $profile_section;
+    my $profile_update;
+    my $profile_value;
+    my $user_config = $class->SUPER::user_config();
+    $user_config->{'profile-field'}   = \$profile_field;
+    $user_config->{'profile-section'} = \$profile_section;
+    $user_config->{'profile-update'}  = \$profile_update;
+    $user_config->{'profile-value'}   = \$profile_value;
+    return $user_config;
+}
+
+#}}}
+
+#{{{sub user_run
+sub user_run {
+    my ( $nakamura, $config ) = @_;
+    if ( !defined $config ) {
+        croak 'No user config supplied!';
+    }
+    if ( defined ${ $config->{'profile-update'} } ) {
+        my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+        my $user  = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
+            $nakamura->{'Log'} );
+        $user->profile_update(
+            ${ $config->{'profile-field'} },
+            ${ $config->{'profile-value'} },
+            ${ $config->{'profile-update'} },
+            ${ $config->{'profile-section'} }
+        );
+        Apache::Sling::Print::print_result($user);
+    }
+    else {
+        $nakamura->SUPER::user_run($config);
+    }
+    return 1;
+}
 
 1;
 __END__

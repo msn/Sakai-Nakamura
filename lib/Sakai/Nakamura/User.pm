@@ -48,10 +48,14 @@ sub me {
 
 #{{{sub profile_update
 sub profile_update {
-    my ($user) = @_;
-    my $res =
-      Apache::Sling::Request::request( \$user,
-        Sakai::Nakamura::UserUtil::profile_update_setup( $user->{'BaseURL'} ) );
+    my ( $user, $field, $value, $act_on_user, $profile_section ) = @_;
+    my $res = Apache::Sling::Request::request(
+        \$user,
+        Sakai::Nakamura::UserUtil::profile_update_setup(
+            $user->{'BaseURL'}, $field, $value,
+            $act_on_user,       $profile_section
+        )
+    );
     my $success = Sakai::Nakamura::UserUtil::profile_update_eval($res);
     my $message = (
         $success
