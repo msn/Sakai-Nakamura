@@ -46,6 +46,24 @@ sub me {
 
 #}}}
 
+#{{{sub profile_update
+sub profile_update {
+    my ($user) = @_;
+    my $res =
+      Apache::Sling::Request::request( \$user,
+        Sakai::Nakamura::UserUtil::profile_update_setup( $user->{'BaseURL'} ) );
+    my $success = Sakai::Nakamura::UserUtil::profile_update_eval($res);
+    my $message = (
+        $success
+        ? 'Profile successfully updated'
+        : 'Problem fetching details for current user'
+    );
+    $user->set_results( "$message", $res );
+    return $success;
+}
+
+#}}}
+
 1;
 
 __END__
@@ -63,6 +81,14 @@ user related functionality for Sling implemented over rest APIs.
 =head2 new
 
 Create, set up, and return a User Agent.
+
+=head2 me
+
+Fetch output from the sakai me service for the logged in user
+
+=head2 profile_update
+
+Update a value in the user profile
 
 =head1 USAGE
 
