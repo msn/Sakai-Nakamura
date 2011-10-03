@@ -5,7 +5,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME              => 'Sakai::Nakamura',
     VERSION_FROM      => 'lib/Sakai/Nakamura.pm', # finds $VERSION
-    PREREQ_PM         => {Apache::Sling => 0.09},
+    PREREQ_PM         => {Apache::Sling => 0.15},
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/Sakai/Nakamura.pm', # retrieve abstract from module
        AUTHOR         => 'D. D. Parry <perl@ddp.me.uk>') : ()),

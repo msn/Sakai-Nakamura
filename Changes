@@ -1,8 +1,11 @@
 Revision history for Perl extension Sakai::Nakamura.
 
+0.06  Mon Oct  3 20:30:00 2011
+        - Adding in support for profile updates.
+
 0.05  Wed Jul 13 15:55:00 2011
-  - Setting the referer on every request to meet
-    the Nakamura security constraints.
+        - Setting the referer on every request to meet
+          the Nakamura security constraints.
 
 0.04  Wed Jul 13 11:45:00 2011
 	- Fixing creation of Nakamura Authn object in tests.
