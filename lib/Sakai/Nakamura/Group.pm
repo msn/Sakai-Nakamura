@@ -27,6 +27,82 @@ sub new {
 
 #}}}
 
+#{{{sub role_add
+sub role_add {
+    my ( $group, @args ) = @_;
+    return $group->member_add( @args );
+}
+
+#}}}
+
+#{{{sub role_add_from_file
+sub role_add_from_file {
+    my ( $group, @args ) = @_;
+    return $group->member_add_from_file( @args );
+}
+
+#}}}
+
+#{{{sub role_delete
+sub role_delete {
+    my ( $group, @args ) = @_;
+    return $group->member_delete( @args );
+}
+
+#}}}
+
+#{{{sub role_exists
+sub role_exists {
+    my ( $group, @args ) = @_;
+    return $group->member_exists( @args );
+}
+
+#}}}
+
+#{{{sub role_view
+sub role_view {
+    my ( $group, @args ) = @_;
+    return $group->member_view( @args );
+}
+
+#}}}
+
+
+#{{{sub role_member_add
+sub role_member_add {
+    return 1;
+}
+
+#}}}
+
+#{{{sub role_member_add_from_file
+sub role_member_add_from_file {
+    return 1;
+}
+
+#}}}
+
+#{{{sub role_member_delete
+sub role_member_delete {
+    return 1;
+}
+
+#}}}
+
+#{{{sub role_member_exists
+sub role_member_exists {
+    return 1;
+}
+
+#}}}
+
+#{{{sub role_member_view
+sub role_member_view {
+    return 1;
+}
+
+#}}}
+
 1;
 
 __END__
@@ -52,6 +128,17 @@ use Sakai::Nakamura::Group;
 =head1 DESCRIPTION
 
 Perl library providing a layer of abstraction to the REST group methods
+
+Sakai Nakamura adds another layer to the traditional
+Apache::Sling view of Groups. Rather than just:
+Groups -> Members, there now exists:
+Groups -> Roles -> Members
+
+Roles are the top level group members, they define what members of
+those roles are able to do in the group.
+
+Role members are the actual system users - they get added to a role and
+that defines what they are able to do in a group:
 
 =head1 REQUIRED ARGUMENTS
 
