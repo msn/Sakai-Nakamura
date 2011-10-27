@@ -7,6 +7,7 @@ use strict;
 use warnings;
 use Carp;
 use base qw(Apache::Sling::Group);
+use Sakai::Nakamura::GroupUtil;
 
 require Exporter;
 
@@ -27,50 +28,22 @@ sub new {
 
 #}}}
 
-#{{{sub role_add
-sub role_add {
-    my ( $group, @args ) = @_;
-    return $group->member_add( @args );
-}
-
-#}}}
-
-#{{{sub role_add_from_file
-sub role_add_from_file {
-    my ( $group, @args ) = @_;
-    return $group->member_add_from_file( @args );
-}
-
-#}}}
-
-#{{{sub role_delete
-sub role_delete {
-    my ( $group, @args ) = @_;
-    return $group->member_delete( @args );
-}
-
-#}}}
-
-#{{{sub role_exists
-sub role_exists {
-    my ( $group, @args ) = @_;
-    return $group->member_exists( @args );
-}
-
-#}}}
-
-#{{{sub role_view
-sub role_view {
-    my ( $group, @args ) = @_;
-    return $group->member_view( @args );
-}
-
-#}}}
-
 
 #{{{sub role_member_add
 sub role_member_add {
-    return 1;
+    my ( $group, $act_on_group, $act_on_role, $add_member ) = @_;
+    my $res = Apache::Sling::Request::request(
+        \$group,
+        Apache::Sling::GroupUtil::member_add_setup(
+            $group->{'BaseURL'}, $act_on_group, $act_on_role, $add_member
+        )
+    );
+    my $success = Sakai::Nakamura::GroupUtil::role_member_add_eval($res);
+    my $message = "Member: \"$add_member\" ";
+    $message .= ( $success ? 'added' : 'was not added' );
+    $message .= " to role \"$act_on_role\" in group \"$act_on_group\"!";
+    $group->set_results( "$message", $res );
+    return $success;
 }
 
 #}}}
