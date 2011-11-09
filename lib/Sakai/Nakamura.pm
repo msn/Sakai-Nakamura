@@ -72,6 +72,7 @@ sub user_run {
     }
     return 1;
 }
+#}}}
 
 1;
 __END__
@@ -103,7 +104,7 @@ D. D. Parry, E<lt>perl@ddp.me.ukE<gt>
 
 =head1 VERSION
 
-0.04
+0.06
 
 =head1 LICENSE AND COPYRIGHT
 

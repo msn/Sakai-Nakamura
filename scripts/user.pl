@@ -66,4 +66,10 @@ For full details run: perl user.pl --man
 =back
 
 =cut
+
+=head1 LICENSE AND COPYRIGHT
+
+LICENSE: http://dev.perl.org/licenses/artistic.html
+
+COPYRIGHT: Daniel David Parry <perl@ddp.me.uk>
 #}}}
