@@ -15,7 +15,7 @@ use base qw(Exporter);
 
 our @EXPORT_OK = ();
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 #{{{sub new
 sub new {
@@ -35,11 +35,13 @@ sub new {
 
 sub user_config {
     my ($class) = @_;
+    my $me;
     my $profile_field;
     my $profile_section;
     my $profile_update;
     my $profile_value;
     my $user_config = $class->SUPER::user_config();
+    $user_config->{'me'}   = \$me;
     $user_config->{'profile-field'}   = \$profile_field;
     $user_config->{'profile-section'} = \$profile_section;
     $user_config->{'profile-update'}  = \$profile_update;
@@ -55,7 +57,14 @@ sub user_run {
     if ( !defined $config ) {
         croak 'No user config supplied!';
     }
-    if ( defined ${ $config->{'profile-update'} } ) {
+    if ( defined ${ $config->{'me'} } ) {
+        my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+        my $user  = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
+            $nakamura->{'Log'} );
+        $user->me();
+        Apache::Sling::Print::print_result($user);
+    }
+    elsif ( defined ${ $config->{'profile-update'} } ) {
         my $authn = new Sakai::Nakamura::Authn( \$nakamura );
         my $user  = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );
