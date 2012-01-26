@@ -113,7 +113,7 @@ D. D. Parry, E<lt>perl@ddp.me.ukE<gt>
 
 =head1 VERSION
 
-0.07
+0.08
 
 =head1 LICENSE AND COPYRIGHT
 
