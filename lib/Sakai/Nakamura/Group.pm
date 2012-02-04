@@ -28,7 +28,6 @@ sub new {
 
 #}}}
 
-
 #{{{sub role_member_add
 sub role_member_add {
     my ( $group, $act_on_group, $act_on_role, $add_member ) = @_;
@@ -93,6 +92,26 @@ group related functionality for Sling implemented over rest APIs.
 =head2 new
 
 Create, set up, and return a Group Object.
+
+=head2 role_member_add
+
+Add a member to a role in a group.
+
+=head2 role_member_add_from_file
+
+Add members to roles in groups as specified in a file.
+
+=head2 role_member_delete
+
+Delete a member from a role in a group.
+
+=head2 role_member_exists
+
+Check whether a member exists in a role in a group.
+
+=head2 role_member_view
+
+View the members in a given role in a group.
 
 =head1 USAGE
 

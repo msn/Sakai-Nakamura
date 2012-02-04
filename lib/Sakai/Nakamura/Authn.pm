@@ -188,6 +188,28 @@ Sakai::Nakamura::Authn - Authenticate to a Sakai::Nakamura instance.
 
 Useful utility functions for general Authn functionality.
 
+=head1 METHODS
+
+=head2 new
+
+Instantiate a new Authn object.
+
+=head2 form_login
+
+Log in to Sakai Nakamura with a form based approach.
+
+=head2 form_logout
+
+Log out from Sakai Nakamura with a form based approach.
+
+=head2 switch_user
+
+Switch from one authenticated user to another.
+
+=head2 login_user
+
+Log a user into the Sakai Nakamura system.
+
 =head1 USAGE
 
 use Sakai::Nakamura::Authn;

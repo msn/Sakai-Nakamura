@@ -100,6 +100,17 @@ Inspects the result returned from issuing the request generated in me_setup
 returning true if the result indicates information was returned successfully,
 else false.
 
+=head2 profile_update_setup
+
+Returns a textual representation of the request needed to update the profile
+for a specified user.
+
+=head2 profile_update_eval
+
+Inspects the result returned from issuing the request generated in
+profile_setup returning true if the result indicates profile information was
+updated successfully, else false.
+
 =head1 USAGE
 
 use Sakai::Nakamura::UserUtil;
