@@ -20,7 +20,7 @@ our $VERSION = '0.08';
 sub me_setup {
     my ($base_url) = @_;
     if ( !defined $base_url ) {
-        croak 'No base url to check existence against!';
+        croak 'No base url to run me against!';
     }
     return "get $base_url/system/me";
 }
@@ -41,7 +41,7 @@ sub me_eval {
 sub profile_update_setup {
     my ( $base_url, $field, $value, $act_on_user, $profile_section ) = @_;
     if ( !defined $base_url ) {
-        croak 'No base url to check existence against!';
+        croak 'No base url to run profile update against!';
     }
     if ( !defined $field ) {
         croak 'No profile field to update specified!';
@@ -57,8 +57,7 @@ sub profile_update_setup {
     }
     my $profile_update_json =
       "{\"elements\":{\"$field\":{\"value\":\"$value\"}}}";
-    my $post_variables = "\$post_variables =
-    [':content','$profile_update_json',':contentType','json',':operation','import',':removeTree','true',':replace','true',':replaceProperties','true']";
+    my $post_variables = "\$post_variables = [':content','$profile_update_json',':contentType','json',':operation','import',':removeTree','true',':replace','true',':replaceProperties','true']";
     return
 "post $base_url/~$act_on_user/public/authprofile/$profile_section.profile.json $post_variables";
 }
