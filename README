@@ -1,27 +1,26 @@
-Sakai-Nakamura version 0.08
+Sakai-Nakamura version 0.09
 ===========================
 
 Welcome to the Sakai Nakamura library for perl. This library sets out to make it
-simple to interact with the skai nakamura web framework from a perl application,
+simple to interact with the sakai nakamura web framework from a perl application,
 thus making it easier to harness the power of sakai and perl simultaneously!
 
 Sakai Nakamura is built upon Apache Sling. Apache Sling is a web framework that
 uses a Java Content Repository, such as Apache Jackrabbit, to store and manage
 content.
 
-Sakai 3 will be the next major new version of the Sakai software. The kernel
-leapfrogs many current-generation architectures for software of its category.
-The enhanced functionality of Sakai 3 will include:
+Sakai OAE, built upon Sakai Nakamura, is an open-source platform that promotes
+collaboration and sharing between users and interoperability between systems.
+It embraces a new vision for academic collaboration informed by the needs of
+learners, teachers and researchers.
 
-    * A revamped user experience
-    * A powerful and easy to use content authoring capability
-    * Social networking features
-    * Improved teaching and learning workflows
-    * Increased scalability
-    * Ease of use for software developers
-
-See: http://groups.google.co.uk/group/sakai-kernel for more information about
-Sakai Nakamura.
+Academic networking capabilities encourage people to connect and participate
+actively in communities that span beyond the traditional boundaries of
+classroom and institution. Powerful capabilities around content . creation,
+authoring, reuse, presentation, and commenting . permit mash-ups and remixable
+experiences of ideas, connectivity, dialog and media. Enhanced search
+capabilities aid discovery of people and content. A widget-based architecture
+simplifies both development and integration with external systems.
 
 See: http://sakaiproject.org for more information about Sakai.
 
@@ -42,6 +41,6 @@ Apache::Sling
 
 COPYRIGHT AND LICENCE
 
-COPYRIGHT: (c) 2011 Daniel David Parry <perl@ddp.me.uk>
+COPYRIGHT: (c) 2012 Daniel David Parry <perl@ddp.me.uk>
 
 LICENSE: http://dev.perl.org/licenses/artistic.html

@@ -1,5 +1,9 @@
 Revision history for Perl extension Sakai::Nakamura.
 
+0.09  Sun Feb 05 15:55:00 2012
+        - Adding support fro groups and worlds.
+        - Adding more test coverage.
+
 0.08  Thu Jan 26 12:00:00 2012
         - Fixing me service support.
         - adding external tests for user.
