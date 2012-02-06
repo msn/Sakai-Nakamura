@@ -29,4 +29,5 @@ t/Local/Sakai-Nakamura-LDAPSynch.t
 t/Local/Sakai-Nakamura.t
 t/Local/Sakai-Nakamura-User.t
 t/Local/Sakai-Nakamura-UserUtil.t
+t/Local/Sakai-Nakamura-World.t
 t/Local/Sakai-Nakamura-WorldUtil.t
