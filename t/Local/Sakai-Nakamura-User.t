@@ -5,7 +5,8 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 12;
+use Test::More tests => 13;
+use Test::Exception;
 BEGIN { use_ok( 'Sakai::Nakamura' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::Authn' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::User' ); }
@@ -33,3 +34,4 @@ ok( defined $user->{ 'Response' },                   'Check response defined' );
 $user->set_results( 'Test Message', undef );
 ok( $user->{ 'Message' } eq 'Test Message', 'Message now set' );
 ok( ! defined $user->{ 'Response' },          'Check response no longer defined' );
+throws_ok { $user->profile_update() } qr/No profile field to update specified!/, 'Check profile_update function croaks without field specified';
