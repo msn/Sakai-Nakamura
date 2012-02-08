@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 28;
+use Test::More tests => 30;
 
 my $sling_host = 'http://localhost:8080';
 my $super_user = 'admin';
@@ -63,6 +63,12 @@ ok( $user->me(), "" );
 @test_properties = ( "user_test_editor=$super_user" );
 ok( $user->update( $test_user, \@test_properties ),
     "User Test: User \"$test_user\" updated successfully." );
+
+# Check can update profile:
+ok( $user->profile_update( 'preferredName', $test_user, $test_user, 'basic' ),
+    "User Test: Profile field 'preferredName' successfully updated to '$test_user' for '$test_user' in section 'basic'." );
+ok( ! $user->profile_update( '_bad_field_', '_bad_value_', '_bad_user_', '_bad_section_' ),
+    "User Test: Can not update profile for non-existent user, section, and field." );
 
 # Check can update properties after addition of user to group:
 # http://jira.sakaiproject.org/browse/KERN-270
