@@ -22,6 +22,8 @@ our $VERSION = '0.09';
 sub new {
     my ( $class, @args ) = @_;
     my $content = $class->SUPER::new(@args);
+    # Add a class variable to track the last content path seen:
+    $content->{'Path'} = q{};
     bless $content, $class;
     return $content;
 }
