@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 17;
+use Test::More tests => 18;
 use Test::Exception;
 BEGIN { use_ok( 'Sakai::Nakamura' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::Authn' ); }
@@ -40,4 +40,8 @@ ok( ! defined $world->{ 'Response' }, 'Check response no longer defined' );
 
 throws_ok { $world->add() } qr/No id defined to add!/, 'Check add function croaks without id';
 throws_ok { $world->add_from_file() } qr/Problem adding from file!/, 'Check add_from_file function croaks without id';
-ok( $world->add_from_file('/dev/null'), 'Check add_from_file function with blank file' );
+
+my $file = "\n";
+throws_ok { $world->add_from_file(\$file) } qr/First CSV column must be the world ID, column heading must be "id". Found: ""/, 'Check add_from_file function croaks with wrong headings';
+$file = "id\n";
+ok ( $world->add_from_file(\$file), 'Check add_from_file function returns ok with just headings' );

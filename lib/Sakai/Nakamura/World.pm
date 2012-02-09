@@ -68,6 +68,8 @@ sub add {
 #{{{sub add_from_file
 sub add_from_file {
     my ( $world, $file, $fork_id, $number_of_forks ) = @_;
+    $fork_id = defined $fork_id ? $fork_id : 0;
+    $number_of_forks = defined $number_of_forks ? $number_of_forks : 1;
     my $csv               = Text::CSV->new();
     my $count             = 0;
     my $number_of_columns = 0;
@@ -80,7 +82,7 @@ sub add_from_file {
                 if ( $csv->parse($_) ) {
                     @column_headings = $csv->fields();
 
-                    # First field must be world:
+                    # First field must be id:
                     if ( $column_headings[0] !~ /^[Ii][Dd]$/msx ) {
                         croak
 'First CSV column must be the world ID, column heading must be "id". Found: "'
