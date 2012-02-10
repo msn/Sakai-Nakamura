@@ -134,7 +134,7 @@ sub add_from_file {
                             $world_template = $columns[$i];
                         }
                         else {
-                           croak "Unsupported column heading \"$heading\" - please use: \"id\", \"title\", \"description\", \"tags\", \"visibility\", \"joinability\", \"world_template\"";
+                           croak "Unsupported column heading \"$heading\" - please use: \"id\", \"title\", \"description\", \"tags\", \"visibility\", \"joinability\", \"worldtemplate\"";
                         }
                     }
                     $world->add( $id, $title, $description, $tags, $visibility, $joinability, $world_template );
