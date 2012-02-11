@@ -102,21 +102,19 @@ sub upload_file {
 #{{{sub upload_from_file
 sub upload_from_file {
     my ( $content, $file, $fork_id, $number_of_forks ) = @_;
+    $fork_id = defined $fork_id ? $fork_id : 0;
+    $number_of_forks = defined $number_of_forks ? $number_of_forks : 1;
     my $count = 0;
     if ( defined $file && open my ($input), '<', $file ) {
         while (<$input>) {
             if ( $fork_id == ( $count++ % $number_of_forks ) ) {
                 chomp;
-                $_ =~ /^(.*?)$/msx
-                  or croak 'Problem parsing content to add';
+                $_ =~ /^\s*(\S.*?)\s*$/msx
+                  or croak "/Problem parsing content to add: '$_'";
                 if ( defined $1 ) {
                     my $local_path  = $1;
                     $content->upload_file( $local_path );
                     Apache::Sling::Print::print_result($content);
-                }
-                else {
-                    print "ERROR: Problem parsing content to add: \"$_\"\n"
-                      or croak 'Problem printing!';
                 }
             }
         }

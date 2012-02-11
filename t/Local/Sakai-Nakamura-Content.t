@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 16;
+use Test::More tests => 19;
 use Test::Exception;
 BEGIN { use_ok( 'Sakai::Nakamura' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::Authn' ); }
@@ -40,3 +40,8 @@ ok( ! defined $content->{ 'Response' },          'Check response no longer defin
 throws_ok { $content->upload_file() } qr/No local file to upload defined!/, 'Check upload_file croaks without local file';
 throws_ok { $content->upload_from_file() } qr/Problem opening file: ''/, 'Check upload_from_file function croaks without file specified';
 ok( $content->upload_from_file('/dev/null'), 'Check upload_from_file function with blank file' );
+
+my $file = "\n";
+throws_ok { $content->upload_from_file() } qr/Problem opening file: ''/, 'Check upload_from_file function croaks without file';
+throws_ok { $content->upload_from_file(\$file) } qr/Problem parsing content to add: ''/, 'Check upload_from_file function croaks with blank file';
+throws_ok { $content->upload_from_file('/tmp/__non__--__tnetsixe__') } qr{Problem opening file: '/tmp/__non__--__tnetsixe__'}, 'Check upload_from_file function croaks with non-existent file specified';
