@@ -18,6 +18,7 @@ MANIFEST
 META.yml
 README
 scripts/user.pl
+t/External/Sakai-Nakamura-Authn.t
 t/External/Sakai-Nakamura-User.t
 t/Local/Sakai-Nakamura-Authn.t
 t/Local/Sakai-Nakamura-AuthnUtil.t

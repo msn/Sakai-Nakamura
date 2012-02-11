@@ -7,6 +7,7 @@ use strict;
 use warnings;
 use Carp;
 use base qw(Apache::Sling::Authn);
+use Sakai::Nakamura::AuthnUtil;
 
 require Exporter;
 
@@ -132,6 +133,7 @@ sub switch_user {
 #{{{sub login_user
 sub login_user {
     my ($authn) = @_;
+    my $success = 1;
 
     # Apply basic authentication to the user agent if url, username and
     # password are supplied:
@@ -140,7 +142,7 @@ sub login_user {
         && defined $authn->{'Password'} )
     {
         if ( $authn->{'Type'} eq 'basic' ) {
-            my $success = $authn->basic_login();
+            $success = $authn->basic_login();
             if ( !$success ) {
                 if ( $authn->{'Verbose'} >= 1 ) {
                     Apache::Sling::Print::print_result($authn);
@@ -153,7 +155,7 @@ sub login_user {
             }
         }
         elsif ( $authn->{'Type'} eq 'form' ) {
-            my $success = $authn->form_login();
+            $success = $authn->form_login();
             if ( !$success ) {
                 if ( $authn->{'Verbose'} >= 1 ) {
                     Apache::Sling::Print::print_result($authn);
@@ -172,6 +174,7 @@ sub login_user {
             Apache::Sling::Print::print_result($authn);
         }
     }
+    return $success;
 }
 
 #}}}
