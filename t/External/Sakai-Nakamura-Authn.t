@@ -113,6 +113,3 @@ ok( $user->del( $test_user ),
     "User Test: User \"$test_user\" deleted successfully." );
 ok( ! $user->check_exists( $test_user ),
     "User Test: User \"$test_user\" should no longer exist." );
-
-# throws_ok { $content->upload_from_file() } qr/Problem opening file: ''/, 'Check upload_from_file function croaks without file specified';
-# ok( $content->upload_from_file('/dev/null'), 'Check upload_from_file function with blank file' );
