@@ -38,10 +38,10 @@ ok( $content->{ 'Message' } eq 'Test Message', 'Message now set' );
 ok( ! defined $content->{ 'Response' },          'Check response no longer defined' );
 
 throws_ok { $content->upload_file() } qr/No local file to upload defined!/, 'Check upload_file croaks without local file';
-throws_ok { $content->upload_from_file() } qr/Problem opening file: ''/, 'Check upload_from_file function croaks without file specified';
+throws_ok { $content->upload_from_file() } qr/File to upload from not defined/, 'Check upload_from_file function croaks without file specified';
 ok( $content->upload_from_file('/dev/null'), 'Check upload_from_file function with blank file' );
 
 my $file = "\n";
-throws_ok { $content->upload_from_file() } qr/Problem opening file: ''/, 'Check upload_from_file function croaks without file';
+throws_ok { $content->upload_from_file() } qr/File to upload from not defined/, 'Check upload_from_file function croaks without file';
 throws_ok { $content->upload_from_file(\$file) } qr/Problem parsing content to add: ''/, 'Check upload_from_file function croaks with blank file';
 throws_ok { $content->upload_from_file('/tmp/__non__--__tnetsixe__') } qr{Problem opening file: '/tmp/__non__--__tnetsixe__'}, 'Check upload_from_file function croaks with non-existent file specified';
