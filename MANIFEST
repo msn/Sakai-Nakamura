@@ -21,7 +21,9 @@ scripts/user.pl
 t/External/Sakai-Nakamura-Authn.t
 t/External/Sakai-Nakamura-Content.t
 t/External/Sakai-Nakamura-Group.t
+t/External/Sakai-Nakamura.t
 t/External/Sakai-Nakamura-User.t
+t/External/Sakai-Nakamura-World.t
 t/Local/Sakai-Nakamura-Authn.t
 t/Local/Sakai-Nakamura-AuthnUtil.t
 t/Local/Sakai-Nakamura-Content.t

@@ -43,21 +43,21 @@ my $user = Sakai::Nakamura::User->new( \$authn, $verbose, $log );
 isa_ok $user, 'Sakai::Nakamura::User', 'user';
 
 ok( defined $group,
-    "User Test: Sling Group Object successfully created." );
+    "Group Test: Sling Group Object successfully created." );
 ok( defined $user,
-    "User Test: Sling User Object successfully created." );
+    "Group Test: Sling User Object successfully created." );
 
 # add user:
 ok( $user->add( $test_user, $test_pass ),
-    "User Test: User \"$test_user\" added successfully." );
+    "Group Test: User \"$test_user\" added successfully." );
 
 # Check can update properties after addition of user to group:
 # http://jira.sakaiproject.org/browse/KERN-270
 # create group:
 ok( $group->add( $test_group ),
-    "User Test: Group \"$test_group\" added successfully." );
+    "Group Test: Group \"$test_group\" added successfully." );
 ok( $group->check_exists( $test_group ),
-    "User Test: Group \"$test_group\" exists." );
+    "Group Test: Group \"$test_group\" exists." );
 
 ok( $group->role_member_add_from_file(),
     "Test role_member_add_from_file function completes successfully." );
@@ -77,10 +77,10 @@ ok( $group->role_member_add( '__bad__group__', '__bad__role__', '__bad__user__' 
 
 # Cleanup Group:
 ok( $group->del( $test_group ),
-    "User Test: Group \"$test_group\" deleted successfully." );
+    "Group Test: Group \"$test_group\" deleted successfully." );
 ok( ! $group->check_exists( $test_group ),
-    "User Test: Group \"$test_group\" should no longer exist." );
+    "Group Test: Group \"$test_group\" should no longer exist." );
 
 # Check user deletion:
 ok( $user->del( $test_user ),
-    "User Test: User \"$test_user\" deleted successfully." );
+    "Group Test: User \"$test_user\" deleted successfully." );

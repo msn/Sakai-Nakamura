@@ -55,10 +55,10 @@ ok( defined $content,
 print {$tmp_content_handle} "Test file\n";
 ok( $content->upload_file($tmp_content_name), 'Check upload_file function' );
 my $upload = "$tmp_content_name\n";
-ok( $content->upload_from_file(\$upload,0,1), 'Check upload_file function' );
+ok( $content->upload_from_file(\$upload,0,1), 'Check upload_from_file function' );
 my ( $tmp_content2_handle, $tmp_content2_name ) = File::Temp::tempfile();
 $upload .= "$tmp_content2_name\n";
-ok( $content->upload_from_file(\$upload,0,2), 'Check upload_file function with two forks' );
+ok( $content->upload_from_file(\$upload,0,2), 'Check upload_from_file function with two forks' );
 unlink($tmp_content_name);
 unlink($tmp_content2_name);
 throws_ok{ $content->upload_from_file($tmp_content_name,0,1)} qr{Problem opening file: '$tmp_content_name'}, 'Check upload_file function croaks with a missing file';

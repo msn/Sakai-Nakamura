@@ -74,9 +74,9 @@ ok( $authn->form_login(), 'Check form_login function works successfully' );
 
 $authn->{'Verbose'} = '0';
 ok( $user->add( $test_user, $test_pass ),
-    "User Test: User \"$test_user\" added successfully." );
+    "Authn Test: User \"$test_user\" added successfully." );
 ok( $user->check_exists( $test_user ),
-    "User Test: User \"$test_user\" exists." );
+    "Authn Test: User \"$test_user\" exists." );
 
 $authn->{'Verbose'} = '1';
 ok( $authn->form_logout(), 'Check form_logout function works successfully' );
@@ -110,6 +110,6 @@ ok( $authn->login_user(), 'Check login_user function with basic auth works succe
 # Check user deletion:
 $authn->{'Verbose'} = '2';
 ok( $user->del( $test_user ),
-    "User Test: User \"$test_user\" deleted successfully." );
+    "Authn Test: User \"$test_user\" deleted successfully." );
 ok( ! $user->check_exists( $test_user ),
-    "User Test: User \"$test_user\" should no longer exist." );
+    "Authn Test: User \"$test_user\" should no longer exist." );

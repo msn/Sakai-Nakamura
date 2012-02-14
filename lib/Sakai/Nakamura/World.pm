@@ -113,7 +113,7 @@ sub add_from_file {
                     my $visibility;
                     my $joinability;
                     my $world_template;
-                    for ( my $i = 2 ; $i < $number_of_columns ; $i++ ) {
+                    for ( my $i = 1 ; $i < $number_of_columns ; $i++ ) {
                         my $heading = $column_headings[$i];
                         if ( $heading =~ /^[Tt][Ii][Tt][Ll][Ee]$/msx ) {
                             $title = $columns[$i];
