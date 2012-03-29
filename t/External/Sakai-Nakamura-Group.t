@@ -71,9 +71,7 @@ ok( $group->role_member_view(),
 throws_ok { $group->role_member_add() } qr{No group name defined to add to!}, 'Check role_member_add function croaks with no values specified';
 ok( $group->role_member_add( $test_group, 'manager', $test_user ),
     "Test role_member_add function completes successfully." );
-# TODO: investigate why this returns success status:
-ok( $group->role_member_add( '__bad__group__', '__bad__role__', '__bad__user__' ),
-    "Test role_member_add function with non-existent group and role." );
+throws_ok { $group->role_member_add( '__bad__group__', '__bad__role__', '__bad__user__'); } qr{}, "Test role_member_add function with non-existent group and role.";
 
 # Cleanup Group:
 ok( $group->del( $test_group ),
