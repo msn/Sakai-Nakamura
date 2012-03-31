@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 30;
+use Test::More tests => 31;
 
 my $sling_host = 'http://localhost:8080';
 my $super_user = 'admin';
@@ -37,6 +37,7 @@ $sling->{'Log'}     = $log;
 # authn object:
 my $authn = Sakai::Nakamura::Authn->new( \$sling );
 isa_ok $authn, 'Sakai::Nakamura::Authn', 'authentication';
+ok( $authn->login_user(), "Log in successful" );
 # user object:
 my $user = Sakai::Nakamura::User->new( \$authn, $verbose, $log );
 isa_ok $user, 'Sakai::Nakamura::User', 'user';

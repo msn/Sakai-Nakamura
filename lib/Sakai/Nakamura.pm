@@ -71,6 +71,7 @@ sub content_run {
     }
     else {
         my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+        $authn->login_user();
         my $content =
           new Sakai::Nakamura::Content( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );
@@ -118,6 +119,7 @@ sub user_run {
     }
     if ( defined ${ $config->{'me'} } ) {
         my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+        $authn->login_user();
         my $user  = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );
         $user->me();
@@ -125,6 +127,7 @@ sub user_run {
     }
     elsif ( defined ${ $config->{'profile-update'} } ) {
         my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+        $authn->login_user();
         my $user  = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );
         $user->profile_update(
@@ -199,6 +202,7 @@ sub world_run {
             elsif ( $pid == 0 ) {                # child
                     # Create a separate authorization per fork:
                 my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+                $authn->login_user();
                 my $user =
                   new Sakai::Nakamura::World( \$authn, $nakamura->{'Verbose'},
                     $nakamura->{'Log'} );
@@ -214,6 +218,7 @@ sub world_run {
     }
     else {
         my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+        $authn->login_user();
         my $world = new Sakai::Nakamura::World( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );
         if ( defined ${ $config->{'add'} } ) {

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::Exception;
-use Test::More tests => 23;
+use Test::More tests => 24;
 
 my $sling_host = 'http://localhost:8080';
 my $super_user = 'admin';
@@ -35,6 +35,7 @@ $sling->{'Log'}     = $log;
 # authn object:
 my $authn = Sakai::Nakamura::Authn->new( \$sling );
 isa_ok $authn, 'Sakai::Nakamura::Authn', 'authentication';
+ok( $authn->login_user(), "Log in successful" );
 # group object:
 my $group = Sakai::Nakamura::Group->new( \$authn, $verbose, $log );
 isa_ok $group, 'Sakai::Nakamura::Group', 'group';

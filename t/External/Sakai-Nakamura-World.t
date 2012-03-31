@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::Exception;
-use Test::More tests => 10;
+use Test::More tests => 11;
 
 my $sling_host = 'http://localhost:8080';
 my $super_user = 'admin';
@@ -30,6 +30,7 @@ $sling->{'Log'}     = $log;
 # authn object:
 my $authn = Sakai::Nakamura::Authn->new( \$sling );
 isa_ok $authn, 'Sakai::Nakamura::Authn', 'authentication';
+ok( $authn->login_user(), "Log in successful" );
 # world object:
 my $world = Sakai::Nakamura::World->new( \$authn, $verbose, $log );
 isa_ok $world, 'Sakai::Nakamura::World', 'world';

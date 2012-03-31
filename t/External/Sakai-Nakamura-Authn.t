@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 34;
+use Test::More tests => 35;
 use Test::Exception;
 
 my $sling_host = 'http://localhost:8080';
@@ -29,6 +29,7 @@ $sling->{'Log'}     = $log;
 # authn object:
 my $authn = Sakai::Nakamura::Authn->new( \$sling );
 isa_ok $authn, 'Sakai::Nakamura::Authn', 'authentication';
+ok( $authn->login_user(), "Log in successful" );
 # user object:
 my $user = Sakai::Nakamura::User->new( \$authn, $verbose, $log );
 isa_ok $user, 'Sakai::Nakamura::User', 'user';
@@ -37,16 +38,16 @@ isa_ok $user, 'Sakai::Nakamura::User', 'user';
 $authn->{'Username'}    = $super_user;
 $authn->{'Password'}    = '__bad__password__';
 
-# Test basic login fail:
-throws_ok { $authn->login_user() } qr{Basic Auth log in for user "admin" at URL "http://localhost:8080" was unsuccessful}, 'Check login_user function (basic) croaks with invalid password';
-$authn->{'Verbose'} = '1';
-throws_ok { $authn->login_user() } qr{Basic Auth log in for user "admin" at URL "http://localhost:8080" was unsuccessful}, 'Check login_user function (basic) croaks with invalid password';
-
 # Test form login fail:
-$authn->{'Type'} = 'form';
 throws_ok { $authn->login_user() } qr{Form Auth log in for user "admin" at URL "http://localhost:8080" was unsuccessful}, 'Check login_user function (form) croaks with invalid password';
 $authn->{'Verbose'} = '0';
 throws_ok { $authn->login_user() } qr{Form Auth log in for user "admin" at URL "http://localhost:8080" was unsuccessful}, 'Check login_user function (form) croaks with invalid password';
+
+# Test basic login fail:
+$authn->{'Type'} = 'basic';
+throws_ok { $authn->login_user() } qr{Basic Auth log in for user "admin" at URL "http://localhost:8080" was unsuccessful}, 'Check login_user function (basic) croaks with invalid password';
+$authn->{'Verbose'} = '1';
+throws_ok { $authn->login_user() } qr{Basic Auth log in for user "admin" at URL "http://localhost:8080" was unsuccessful}, 'Check login_user function (basic) croaks with invalid password';
 
 # Test unsupported login type:
 $authn->{'Type'} = '__bad__type__';

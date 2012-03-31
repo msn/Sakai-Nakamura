@@ -134,6 +134,7 @@ sub switch_user {
 sub login_user {
     my ($authn) = @_;
     my $success = 1;
+    $authn->{'Type'} = ( defined $authn->{'Type'} ? $authn->{'Type'} : 'form' );
 
     # Apply basic authentication to the user agent if url, username and
     # password are supplied:

@@ -22,7 +22,7 @@ $nakamura->{'Log'} = 'log.txt';
 
 my $authn = new Sakai::Nakamura::Authn(\$nakamura);
 ok( $authn->{ 'BaseURL' } eq 'http://localhost:8080', 'Check BaseURL set' );
-ok( $authn->{ 'Type' }    eq 'basic',                 'Check Auth type set' );
+ok( ! defined  $authn->{ 'Type' },                    'Check Auth type not defined' );
 ok( $authn->{ 'Log' }     eq 'log.txt',               'Check Log set' );
 ok( $authn->{ 'Message' } eq '',                      'Check Message set' );
 ok( $authn->{ 'Verbose' } == 1,                       'Check Verbosity set' );
