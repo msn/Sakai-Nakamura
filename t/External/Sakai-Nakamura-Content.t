@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::Exception;
-use Test::More tests => 16;
+use Test::More tests => 17;
 
 my $sling_host = 'http://localhost:8080';
 my $super_user = 'admin';
@@ -55,11 +55,15 @@ ok( defined $content,
 
 ( $tmp_content_handle, $tmp_content_name ) = File::Temp::tempfile();
 print {$tmp_content_handle} "Test file\n";
+close $tmp_content_handle;
 ok( $content->upload_file($tmp_content_name), 'Check upload_file function' );
+ok( $content->view_visibility(), 'Check view_visibility function' );
 my $upload = "$tmp_content_name\n";
 ok( $content->upload_from_file(\$upload,0,1), 'Check upload_from_file function' );
 my ( $tmp_content2_handle, $tmp_content2_name ) = File::Temp::tempfile();
 $upload .= "$tmp_content2_name\n";
+print {$tmp_content2_handle} "Test file\n";
+close $tmp_content2_handle;
 ok( $content->upload_from_file(\$upload,0,2), 'Check upload_from_file function with two forks' );
 unlink($tmp_content_name);
 unlink($tmp_content2_name);

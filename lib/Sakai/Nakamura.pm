@@ -33,6 +33,17 @@ sub new {
 
 #}}}
 
+#{{{sub content_config
+
+sub content_config {
+    my ($class) = @_;
+    my $view_visibility;
+    my $content_config = $class->SUPER::content_config();
+    $content_config->{'view-visibility'}   = \$view_visibility;
+    return $content_config;
+}
+#}}}
+
 #{{{sub content_run
 sub content_run {
     my ( $nakamura, $config ) = @_;
@@ -80,6 +91,10 @@ sub content_run {
             $content->upload_file(
                 ${ $config->{'local'} }
             );
+            Apache::Sling::Print::print_result($content);
+        }
+        elsif ( defined ${ $config->{'view-visibility'} } ) {
+            $content->view_visibility( ${ $config->{'view-visibility'} } );
             Apache::Sling::Print::print_result($content);
         }
         else {
