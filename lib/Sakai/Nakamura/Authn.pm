@@ -24,6 +24,7 @@ sub new {
     # allowed to post to the Sakai Nakamura instance:
     ${ $nakamura }->{'Referer'} = '/dev/integrationtests';
     my $authn = $class->SUPER::new($nakamura);
+    ${$nakamura}->{'Authn'} = \$authn;
     bless $authn, $class;
     return $authn;
 }

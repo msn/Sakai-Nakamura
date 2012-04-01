@@ -55,6 +55,10 @@ sub content_run {
       Apache::Sling::URL::strip_leading_slash( ${ $config->{'remote'} } );
     ${ $config->{'remote-source'} } = Apache::Sling::URL::strip_leading_slash(
         ${ $config->{'remote-source'} } );
+    my $authn =
+      defined $nakamura->{'Authn'}
+      ? ${ $nakamura->{'Authn'} }
+      : new Sakai::Nakamura::Authn( \$nakamura );
 
     if ( defined ${ $config->{'additions'} } ) {
         my $message =
@@ -65,8 +69,10 @@ sub content_run {
             my $pid = fork;
             if ($pid) { push @childs, $pid; }    # parent
             elsif ( $pid == 0 ) {                # child
-                    # Create a separate authorization per fork:
-                my $authn = new Apache::Sling::Authn( \$nakamura );
+                    # Create a new separate user agent per fork in order to
+                    # ensure cookie stores are separate, then log the user in:
+                $authn->{'LWP'} = $authn->user_agent();
+                $authn->login_user();
                 my $content =
                   new Sakai::Nakamura::Content( \$authn, $nakamura->{'Verbose'},
                     $nakamura->{'Log'} );
@@ -81,19 +87,19 @@ sub content_run {
         foreach (@childs) { waitpid $_, 0; }
     }
     else {
-        my $authn = new Sakai::Nakamura::Authn( \$nakamura );
-        $authn->login_user();
         my $content =
           new Sakai::Nakamura::Content( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );
         if (   defined ${ $config->{'local'} } )
         {
+            $authn->login_user();
             $content->upload_file(
                 ${ $config->{'local'} }
             );
             Apache::Sling::Print::print_result($content);
         }
         elsif ( defined ${ $config->{'view-visibility'} } ) {
+            $authn->login_user();
             $content->view_visibility( ${ $config->{'view-visibility'} } );
             Apache::Sling::Print::print_result($content);
         }
@@ -132,8 +138,12 @@ sub user_run {
     if ( !defined $config ) {
         croak 'No user config supplied!';
     }
+    my $authn =
+      defined $nakamura->{'Authn'}
+      ? ${ $nakamura->{'Authn'} }
+      : new Sakai::Nakamura::Authn( \$nakamura );
+
     if ( defined ${ $config->{'me'} } ) {
-        my $authn = new Sakai::Nakamura::Authn( \$nakamura );
         $authn->login_user();
         my $user  = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );
@@ -141,7 +151,6 @@ sub user_run {
         Apache::Sling::Print::print_result($user);
     }
     elsif ( defined ${ $config->{'profile-update'} } ) {
-        my $authn = new Sakai::Nakamura::Authn( \$nakamura );
         $authn->login_user();
         my $user  = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );
@@ -205,6 +214,10 @@ sub world_run {
         croak 'No world config supplied!';
     }
     $nakamura->SUPER::check_forks;
+    my $authn =
+      defined $nakamura->{'Authn'}
+      ? ${ $nakamura->{'Authn'} }
+      : new Sakai::Nakamura::Authn( \$nakamura );
 
     if ( defined ${ $config->{'additions'} } ) {
         my $message =
@@ -215,8 +228,9 @@ sub world_run {
             my $pid = fork;
             if ($pid) { push @childs, $pid; }    # parent
             elsif ( $pid == 0 ) {                # child
-                    # Create a separate authorization per fork:
-                my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+                    # Create a new separate user agent per fork in order to
+                    # ensure cookie stores are separate, then log the user in:
+                $authn->{'LWP'} = $authn->user_agent();
                 $authn->login_user();
                 my $user =
                   new Sakai::Nakamura::World( \$authn, $nakamura->{'Verbose'},
@@ -232,7 +246,6 @@ sub world_run {
         foreach (@childs) { waitpid $_, 0; }
     }
     else {
-        my $authn = new Sakai::Nakamura::Authn( \$nakamura );
         $authn->login_user();
         my $world = new Sakai::Nakamura::World( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );
