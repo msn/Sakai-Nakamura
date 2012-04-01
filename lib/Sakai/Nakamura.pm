@@ -20,16 +20,16 @@ our @EXPORT_OK = ();
 our $VERSION = '0.10';
 
 #{{{sub new
-sub new {
-    my ( $class, @args ) = @_;
-    my $authn = $class->SUPER::new(@args);
+# sub new {
+    # my ( $class, @args ) = @_;
+    # my $authn = $class->SUPER::new(@args);
 
     # Set the Referer to /dev/integrationtests in order to be
     # allowed to post to the Sakai Nakamura instance:
-    $authn->{'Referer'} = "/dev/integrationtests";
-    bless $authn, $class;
-    return $authn;
-}
+    # $authn->{'Referer'} = "/dev/integrationtests";
+    # bless $authn, $class;
+    # return $authn;
+# }
 
 #}}}
 

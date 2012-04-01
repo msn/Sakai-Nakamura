@@ -17,17 +17,6 @@ our @EXPORT_OK = ();
 
 our $VERSION = '0.10';
 
-#{{{sub new
-
-sub new {
-    my ( $class, @args ) = @_;
-    my $group = $class->SUPER::new(@args);
-    bless $group, $class;
-    return $group;
-}
-
-#}}}
-
 #{{{sub role_member_add
 sub role_member_add {
     my ( $group, $act_on_group, $act_on_role, $add_member ) = @_;

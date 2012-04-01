@@ -16,17 +16,6 @@ our @EXPORT_OK = ();
 
 our $VERSION = '0.10';
 
-#{{{sub new
-
-sub new {
-    my ( $class, @args ) = @_;
-    my $ldap_synch = $class->SUPER::new(@args);
-    bless $ldap_synch, $class;
-    return $ldap_synch;
-}
-
-#}}}
-
 1;
 
 __END__
