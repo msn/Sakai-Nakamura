@@ -1,5 +1,11 @@
 Revision history for Perl extension Sakai::Nakamura.
 
+0.11  Mon Apr  2 20:45:00 2012
+        - Additional tests
+        - Refactoring auth to subclass correctly
+        - Removing unneccessary constructors
+        - Added view visibility on content.
+
 0.10  Tue Feb 14 21:00:00 2012
         - Increasing test coverage to > 95%
 
