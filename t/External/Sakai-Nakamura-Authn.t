@@ -16,9 +16,10 @@ BEGIN { use_ok( 'Sakai::Nakamura' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::Authn' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::User' ); }
 
-# test user name and pass:
+# test user name, pass and email:
 my $test_user = "user_test_user_$$";
 my $test_pass = "pass";
+my @test_properties = ( "email=test\@example.com" );
 
 # sling object:
 my $sling = Sakai::Nakamura->new();
@@ -74,7 +75,7 @@ $authn->{'Verbose'} = '2';
 ok( $authn->form_login(), 'Check form_login function works successfully' );
 
 $authn->{'Verbose'} = '0';
-ok( $user->add( $test_user, $test_pass ),
+ok( $user->add( $test_user, $test_pass, \@test_properties ),
     "Authn Test: User \"$test_user\" added successfully." );
 ok( $user->check_exists( $test_user ),
     "Authn Test: User \"$test_user\" exists." );

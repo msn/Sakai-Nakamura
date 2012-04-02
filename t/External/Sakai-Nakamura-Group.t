@@ -23,6 +23,8 @@ my $test_user = "user_test_user_$$";
 my $test_pass = "pass";
 # test group name:
 my $test_group = "g-user_test_group_$$";
+# test email:
+my @test_properties = ( "email=test\@example.com" );
 
 # sling object:
 my $sling = Sakai::Nakamura->new();
@@ -49,7 +51,7 @@ ok( defined $user,
     "Group Test: Sling User Object successfully created." );
 
 # add user:
-ok( $user->add( $test_user, $test_pass ),
+ok( $user->add( $test_user, $test_pass. \@test_properties ),
     "Group Test: User \"$test_user\" added successfully." );
 
 # Check can update properties after addition of user to group:

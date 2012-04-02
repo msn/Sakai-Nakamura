@@ -21,7 +21,7 @@ my $test_user = "user_test_user_$$";
 # test user pass:
 my $test_pass = "pass";
 # test properties:
-my @test_properties;
+my @test_properties = ( "email=test\@example.com" );
 
 # test group name:
 my $test_group = "g-user_test_group_$$";
