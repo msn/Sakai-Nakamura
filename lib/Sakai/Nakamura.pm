@@ -21,14 +21,14 @@ our $VERSION = '0.11';
 
 #{{{sub new
 # sub new {
-    # my ( $class, @args ) = @_;
-    # my $authn = $class->SUPER::new(@args);
+# my ( $class, @args ) = @_;
+# my $authn = $class->SUPER::new(@args);
 
-    # Set the Referer to /dev/integrationtests in order to be
-    # allowed to post to the Sakai Nakamura instance:
-    # $authn->{'Referer'} = "/dev/integrationtests";
-    # bless $authn, $class;
-    # return $authn;
+# Set the Referer to /dev/integrationtests in order to be
+# allowed to post to the Sakai Nakamura instance:
+# $authn->{'Referer'} = "/dev/integrationtests";
+# bless $authn, $class;
+# return $authn;
 # }
 
 #}}}
@@ -37,11 +37,14 @@ our $VERSION = '0.11';
 
 sub content_config {
     my ($class) = @_;
+    my $view_title;
     my $view_visibility;
     my $content_config = $class->SUPER::content_config();
-    $content_config->{'view-visibility'}   = \$view_visibility;
+    $content_config->{'view-title'}      = \$view_title;
+    $content_config->{'view-visibility'} = \$view_visibility;
     return $content_config;
 }
+
 #}}}
 
 #{{{sub content_run
@@ -90,17 +93,19 @@ sub content_run {
         my $content =
           new Sakai::Nakamura::Content( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );
-        if (   defined ${ $config->{'local'} } )
-        {
+        if ( defined ${ $config->{'local'} } ) {
             $authn->login_user();
-            $content->upload_file(
-                ${ $config->{'local'} }
-            );
+            $content->upload_file( ${ $config->{'local'} } );
             Apache::Sling::Print::print_result($content);
         }
         elsif ( defined ${ $config->{'view-visibility'} } ) {
             $authn->login_user();
             $content->view_visibility( ${ $config->{'view-visibility'} } );
+            Apache::Sling::Print::print_result($content);
+        }
+        elsif ( defined ${ $config->{'view-title'} } ) {
+            $authn->login_user();
+            $content->view_title( ${ $config->{'view-title'} } );
             Apache::Sling::Print::print_result($content);
         }
         else {
@@ -122,7 +127,7 @@ sub user_config {
     my $profile_update;
     my $profile_value;
     my $user_config = $class->SUPER::user_config();
-    $user_config->{'me'}   = \$me;
+    $user_config->{'me'}              = \$me;
     $user_config->{'profile-field'}   = \$profile_field;
     $user_config->{'profile-section'} = \$profile_section;
     $user_config->{'profile-update'}  = \$profile_update;
@@ -145,14 +150,14 @@ sub user_run {
 
     if ( defined ${ $config->{'me'} } ) {
         $authn->login_user();
-        my $user  = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
+        my $user = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );
         $user->me();
         Apache::Sling::Print::print_result($user);
     }
     elsif ( defined ${ $config->{'profile-update'} } ) {
         $authn->login_user();
-        my $user  = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
+        my $user = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );
         $user->profile_update(
             ${ $config->{'profile-field'} },
@@ -167,6 +172,7 @@ sub user_run {
     }
     return 1;
 }
+
 #}}}
 
 #{{{sub world_config
@@ -183,23 +189,23 @@ sub world_config {
     my $joinability;
     my $world_template;
     my %world_config = (
-        'auth'            => \$class->{'Auth'},
-        'help'            => \$class->{'Help'},
-        'log'             => \$class->{'Log'},
-        'man'             => \$class->{'Man'},
-        'pass'            => \$class->{'Pass'},
-        'threads'         => \$class->{'Threads'},
-        'url'             => \$class->{'URL'},
-        'user'            => \$class->{'User'},
-        'verbose'         => \$class->{'Verbose'},
-        'add'             => \$add,
-        'additions'       => \$additions,
-        'title'           => \$title,
-        'description'     => \$description,
-        'tags'            => \$tags,
-        'visibility'      => \$visibility,
-        'joinability'     => \$joinability,
-        'world_template'  => \$world_template
+        'auth'           => \$class->{'Auth'},
+        'help'           => \$class->{'Help'},
+        'log'            => \$class->{'Log'},
+        'man'            => \$class->{'Man'},
+        'pass'           => \$class->{'Pass'},
+        'threads'        => \$class->{'Threads'},
+        'url'            => \$class->{'URL'},
+        'user'           => \$class->{'User'},
+        'verbose'        => \$class->{'Verbose'},
+        'add'            => \$add,
+        'additions'      => \$additions,
+        'title'          => \$title,
+        'description'    => \$description,
+        'tags'           => \$tags,
+        'visibility'     => \$visibility,
+        'joinability'    => \$joinability,
+        'world_template' => \$world_template
     );
 
     return \%world_config;
@@ -250,12 +256,21 @@ sub world_run {
         my $world = new Sakai::Nakamura::World( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );
         if ( defined ${ $config->{'add'} } ) {
-            $world->add( ${ $config->{'add'} }, ${ $config->{'title'} }, ${ $config->{'description'} }, ${ $config->{'tags'} }, ${ $config->{'visibility'} }, ${ $config->{'joinability'} }, ${ $config->{'world_template'} } );
+            $world->add(
+                ${ $config->{'add'} },
+                ${ $config->{'title'} },
+                ${ $config->{'description'} },
+                ${ $config->{'tags'} },
+                ${ $config->{'visibility'} },
+                ${ $config->{'joinability'} },
+                ${ $config->{'world_template'} }
+            );
             Apache::Sling::Print::print_result($world);
         }
     }
     return 1;
 }
+
 #}}}
 
 1;

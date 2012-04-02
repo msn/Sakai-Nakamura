@@ -131,9 +131,9 @@ sub upload_from_file {
 
 #}}}
 
-#{{{sub view_visibility
-sub view_visibility {
-    my ( $content, $remote_dest ) = @_;
+#{{{sub view_attribute
+sub view_attribute {
+    my ( $content, $remote_dest, $attribute_name, $nakamura_name ) = @_;
     $remote_dest =
       defined $remote_dest
       ? Apache::Sling::URL::strip_leading_slash($remote_dest)
@@ -143,10 +143,30 @@ sub view_visibility {
         return $json_success;
     }
     my $content_json = from_json( $content->{'Message'} );
-    my $visibility   = $content_json->{'sakai:permissions'};
-    my $success      = defined $visibility;
+    my $attribute    = $content_json->{$nakamura_name};
+    my $success      = defined $attribute;
     $content->{'Message'} =
-      $success ? $visibility : 'Problem viewing visibility';
+      $success ? $attribute : "Problem viewing $attribute_name";
+    return $success;
+}
+
+#}}}
+
+#{{{sub view_title
+sub view_title {
+    my ( $content, $remote_dest ) = @_;
+    my $success = $content->view_attribute( $remote_dest, 'title',
+        'sakai:pooled-content-file-name' );
+    return $success;
+}
+
+#}}}
+
+#{{{sub view_visibility
+sub view_visibility {
+    my ( $content, $remote_dest ) = @_;
+    my $success = $content->view_attribute( $remote_dest, 'visibility',
+        'sakai:permissions' );
     return $success;
 }
 
