@@ -57,9 +57,6 @@ ok( $user->add( $test_user, $test_pass, \@test_properties ),
 ok( $user->check_exists( $test_user ),
     "User Test: User \"$test_user\" exists." );
 
-# check me service:
-ok( $user->me(), "" );
-
 # Check can update properties:
 @test_properties = ( "user_test_editor=$super_user" );
 ok( $user->update( $test_user, \@test_properties ),
@@ -114,5 +111,9 @@ ok( $authn->switch_user( $super_user, $super_pass ),
 # Check user deletion:
 ok( $user->del( $test_user ),
     "User Test: User \"$test_user\" deleted successfully." );
+
+# check me service:
+ok( $user->me(), "" );
+
 ok( ! $user->check_exists( $test_user ),
     "User Test: User \"$test_user\" should no longer exist." );

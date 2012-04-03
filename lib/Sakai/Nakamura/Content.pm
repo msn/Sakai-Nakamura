@@ -133,20 +133,38 @@ sub upload_from_file {
 
 #{{{sub view_attribute
 sub view_attribute {
-    my ( $content, $remote_dest, $attribute_name, $nakamura_name ) = @_;
+    my ( $content, $remote_dest, $attribute_name, $nakamura_name, $missing_ok ) = @_;
     $remote_dest =
       defined $remote_dest
       ? Apache::Sling::URL::strip_leading_slash($remote_dest)
       : $content->{'Path'};
+    # By default the attribute must be present in the full JSON:
+    $missing_ok = defined $missing_ok ? $missing_ok : 0;
     my $json_success = $content->view_full_json($remote_dest);
     if ( !$json_success ) {
         return $json_success;
     }
     my $content_json = from_json( $content->{'Message'} );
     my $attribute    = $content_json->{$nakamura_name};
+
+		# If the attribute is undefined but allowed to be
+    # missing then set it to an empty string:
+    if ( ! defined $attribute && $missing_ok ) {
+      $attribute = q{};
+    }
     my $success      = defined $attribute;
     $content->{'Message'} =
       $success ? $attribute : "Problem viewing $attribute_name";
+    return $success;
+}
+
+#}}}
+
+#{{{sub view_description
+sub view_description {
+    my ( $content, $remote_dest ) = @_;
+    my $success = $content->view_attribute( $remote_dest, 'description',
+        'sakai:description', 1 );
     return $success;
 }
 

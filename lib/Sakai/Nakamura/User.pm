@@ -17,6 +17,24 @@ our @EXPORT_OK = ();
 
 our $VERSION = '0.11';
 
+#{{{sub check_exists
+sub check_exists {
+    my ( $user, $act_on_user ) = @_;
+    my $res = Apache::Sling::Request::request(
+        \$user,
+        Sakai::Nakamura::UserUtil::exists_setup(
+            $user->{'BaseURL'}, $act_on_user
+        )
+    );
+    my $success = Sakai::Nakamura::UserUtil::exists_eval($res);
+    my $message = "User \"$act_on_user\" ";
+    $message .= ( $success ? 'exists!' : 'does not exist!' );
+    $user->set_results( "$message", $res );
+    return $success;
+}
+
+#}}}
+
 #{{{sub me
 sub me {
     my ($user) = @_;
@@ -71,9 +89,9 @@ user related functionality for Sling implemented over rest APIs.
 
 =head1 METHODS
 
-=head2 new
+=head2 check_exists
 
-Create, set up, and return a User Agent.
+Check whether the user exists
 
 =head2 me
 

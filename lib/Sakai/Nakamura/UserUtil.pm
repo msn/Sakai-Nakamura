@@ -15,6 +15,30 @@ our @EXPORT_OK = ();
 
 our $VERSION = '0.11';
 
+#{{{sub exists_setup
+
+sub exists_setup {
+    my ( $base_url, $act_on_user ) = @_;
+    if ( !defined $base_url ) {
+        croak 'No base url to check existence against!';
+    }
+    if ( !defined $act_on_user ) {
+        croak 'No user to check existence of defined!';
+    }
+    return "get $base_url/system/userManager/user.exists.html?userid=$act_on_user";
+}
+
+#}}}
+
+#{{{sub exists_eval
+
+sub exists_eval {
+    my ($res) = @_;
+    return ( ${$res}->code eq '204' );
+}
+
+#}}}
+
 #{{{sub me_setup
 
 sub me_setup {
@@ -87,6 +111,17 @@ Utility library returning strings representing Rest queries that perform
 user related actions in the system.
 
 =head1 METHODS
+
+=head2 exists_setup
+
+Returns a textual representation of the request needed to test whether a given
+username exists in the system.
+
+=head2 exists_eval
+
+Inspects the result returned from issuing the request generated in exists_setup
+returning true if the result indicates the username does exist in the system,
+else false.
 
 =head2 me_setup
 

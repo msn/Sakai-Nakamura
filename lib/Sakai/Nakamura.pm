@@ -37,9 +37,11 @@ our $VERSION = '0.11';
 
 sub content_config {
     my ($class) = @_;
+    my $view_description;
     my $view_title;
     my $view_visibility;
     my $content_config = $class->SUPER::content_config();
+    $content_config->{'view-description'}      = \$view_description;
     $content_config->{'view-title'}      = \$view_title;
     $content_config->{'view-visibility'} = \$view_visibility;
     return $content_config;
@@ -98,14 +100,19 @@ sub content_run {
             $content->upload_file( ${ $config->{'local'} } );
             Apache::Sling::Print::print_result($content);
         }
-        elsif ( defined ${ $config->{'view-visibility'} } ) {
+        elsif ( defined ${ $config->{'view-description'} } ) {
             $authn->login_user();
-            $content->view_visibility( ${ $config->{'view-visibility'} } );
+            $content->view_description( ${ $config->{'view-description'} } );
             Apache::Sling::Print::print_result($content);
         }
         elsif ( defined ${ $config->{'view-title'} } ) {
             $authn->login_user();
             $content->view_title( ${ $config->{'view-title'} } );
+            Apache::Sling::Print::print_result($content);
+        }
+        elsif ( defined ${ $config->{'view-visibility'} } ) {
+            $authn->login_user();
+            $content->view_visibility( ${ $config->{'view-visibility'} } );
             Apache::Sling::Print::print_result($content);
         }
         else {
@@ -148,7 +155,14 @@ sub user_run {
       ? ${ $nakamura->{'Authn'} }
       : new Sakai::Nakamura::Authn( \$nakamura );
 
-    if ( defined ${ $config->{'me'} } ) {
+    if ( defined ${ $config->{'exists'} } ) {
+        $authn->login_user();
+        my $user = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
+            $nakamura->{'Log'} );
+        $user->check_exists( ${ $config->{'exists'} } );
+        Apache::Sling::Print::print_result($user);
+    }
+    elsif ( defined ${ $config->{'me'} } ) {
         $authn->login_user();
         my $user = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );

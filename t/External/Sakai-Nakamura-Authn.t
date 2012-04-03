@@ -80,19 +80,6 @@ ok( $user->add( $test_user, $test_pass, \@test_properties ),
 ok( $user->check_exists( $test_user ),
     "Authn Test: User \"$test_user\" exists." );
 
-$authn->{'Verbose'} = '1';
-ok( $authn->form_logout(), 'Check form_logout function works successfully' );
-
-$authn->{'Verbose'} = '2';
-$authn->{'Type'} = 'form';
-ok( $authn->login_user(), 'Check login_user function with form auth, verbose > 1 works successfully' );
-ok( $authn->form_logout(), 'Check form_logout function works successfully' );
-
-$authn->{'Verbose'} = '0';
-$authn->{'Type'} = 'form';
-ok( $authn->login_user(), 'Check login_user function with form auth works successfully' );
-ok( $authn->form_logout(), 'Check form_logout function works successfully' );
-
 $authn->{'Verbose'} = '2';
 throws_ok { $authn->switch_user() } qr{New username to switch to not defined}, 'Check switch_user croaks without username';
 throws_ok { $authn->switch_user($super_user) } qr{New password to use in switch not defined}, 'Check switch_user croaks without password';
@@ -113,5 +100,20 @@ ok( $authn->login_user(), 'Check login_user function with basic auth works succe
 $authn->{'Verbose'} = '2';
 ok( $user->del( $test_user ),
     "Authn Test: User \"$test_user\" deleted successfully." );
+
+# Check form_logout:
+$authn->{'Verbose'} = '1';
+ok( $authn->form_logout(), 'Check form_logout function works successfully' );
+
+$authn->{'Verbose'} = '2';
+$authn->{'Type'} = 'form';
+ok( $authn->login_user(), 'Check login_user function with form auth, verbose > 1 works successfully' );
+ok( $authn->form_logout(), 'Check form_logout function works successfully' );
+
+$authn->{'Verbose'} = '0';
+$authn->{'Type'} = 'form';
+ok( $authn->login_user(), 'Check login_user function with form auth works successfully' );
+ok( $authn->form_logout(), 'Check form_logout function works successfully' );
+
 ok( ! $user->check_exists( $test_user ),
     "Authn Test: User \"$test_user\" should no longer exist." );
