@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 13;
+use Test::More tests => 12;
 BEGIN { use_ok( 'Sakai::Nakamura' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::Authn' ); }
 
@@ -22,7 +22,6 @@ $nakamura->{'Log'} = 'log.txt';
 
 my $authn = new Sakai::Nakamura::Authn(\$nakamura);
 ok( $authn->{ 'BaseURL' } eq 'http://localhost:8080', 'Check BaseURL set' );
-ok( ! defined  $authn->{ 'Type' },                    'Check Auth type not defined' );
 ok( $authn->{ 'Log' }     eq 'log.txt',               'Check Log set' );
 ok( $authn->{ 'Message' } eq '',                      'Check Message set' );
 ok( $authn->{ 'Verbose' } == 1,                       'Check Verbosity set' );

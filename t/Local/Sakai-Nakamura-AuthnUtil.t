@@ -21,7 +21,7 @@ ok( Sakai::Nakamura::AuthnUtil::form_login_setup( 'http://localhost:8080', 'admi
   'Check form_login_setup function' );
 
 ok( Sakai::Nakamura::AuthnUtil::form_logout_setup( 'http://localhost:8080' ) eq
-  q(post http://localhost:8080/system/sling/formlogin $post_variables = ['sakaiauth:logout','1']), 'Check form_logout_setup function' );
+  q(get http://localhost:8080/system/sling/logout?resource=/index), 'Check form_logout_setup function' );
 
 ok( Sakai::Nakamura::AuthnUtil::form_login_eval( \$res ), 'Check form_login_eval function' );
 ok( Sakai::Nakamura::AuthnUtil::form_logout_eval( \$res ), 'Check form_logout_eval function' );
