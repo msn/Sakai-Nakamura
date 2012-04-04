@@ -133,11 +133,13 @@ sub upload_from_file {
 
 #{{{sub view_attribute
 sub view_attribute {
-    my ( $content, $remote_dest, $attribute_name, $nakamura_name, $missing_ok ) = @_;
+    my ( $content, $remote_dest, $attribute_name, $nakamura_name, $missing_ok )
+      = @_;
     $remote_dest =
       defined $remote_dest
       ? Apache::Sling::URL::strip_leading_slash($remote_dest)
       : $content->{'Path'};
+
     # By default the attribute must be present in the full JSON:
     $missing_ok = defined $missing_ok ? $missing_ok : 0;
     my $json_success = $content->view_full_json($remote_dest);
@@ -147,14 +149,29 @@ sub view_attribute {
     my $content_json = from_json( $content->{'Message'} );
     my $attribute    = $content_json->{$nakamura_name};
 
-		# If the attribute is undefined but allowed to be
-    # missing then set it to an empty string:
-    if ( ! defined $attribute && $missing_ok ) {
-      $attribute = q{};
+    # merge an array attribute into a string:
+    if ( ref($attribute) eq 'ARRAY' ) {
+        $attribute = join( ',', @{$attribute} );
     }
-    my $success      = defined $attribute;
+
+    # If the attribute is undefined but allowed to be
+    # missing then set it to an empty string:
+    if ( !defined $attribute && $missing_ok ) {
+        $attribute = q{};
+    }
+    my $success = defined $attribute;
     $content->{'Message'} =
       $success ? $attribute : "Problem viewing $attribute_name";
+    return $success;
+}
+
+#}}}
+
+#{{{sub view_copyright
+sub view_copyright {
+    my ( $content, $remote_dest ) = @_;
+    my $success =
+      $content->view_attribute( $remote_dest, 'copyright', 'sakai:copyright' );
     return $success;
 }
 
@@ -165,6 +182,16 @@ sub view_description {
     my ( $content, $remote_dest ) = @_;
     my $success = $content->view_attribute( $remote_dest, 'description',
         'sakai:description', 1 );
+    return $success;
+}
+
+#}}}
+
+#{{{sub view_tags
+sub view_tags {
+    my ( $content, $remote_dest ) = @_;
+    my $success =
+      $content->view_attribute( $remote_dest, 'tags', 'sakai:tags', 1 );
     return $success;
 }
 
@@ -215,6 +242,22 @@ Upload a file in to the system.
 =head2 upload_from_file
 
 Upload content listed in a file in to the system.
+
+=head2 view_copyright
+
+View the copyright of a content item.
+
+=head2 view_description
+
+View the description of a content item.
+
+=head2 view_tags
+
+View 1 or more tags for a content item.
+
+=head2 view_title
+
+View the title of a content item.
 
 =head2 view_visibility
 

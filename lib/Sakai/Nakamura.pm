@@ -37,13 +37,17 @@ our $VERSION = '0.11';
 
 sub content_config {
     my ($class) = @_;
+    my $view_copyright;
     my $view_description;
+    my $view_tags;
     my $view_title;
     my $view_visibility;
     my $content_config = $class->SUPER::content_config();
-    $content_config->{'view-description'}      = \$view_description;
-    $content_config->{'view-title'}      = \$view_title;
-    $content_config->{'view-visibility'} = \$view_visibility;
+    $content_config->{'view-copyright'}   = \$view_copyright;
+    $content_config->{'view-description'} = \$view_description;
+    $content_config->{'view-tags'}        = \$view_tags;
+    $content_config->{'view-title'}       = \$view_title;
+    $content_config->{'view-visibility'}  = \$view_visibility;
     return $content_config;
 }
 
@@ -100,9 +104,19 @@ sub content_run {
             $content->upload_file( ${ $config->{'local'} } );
             Apache::Sling::Print::print_result($content);
         }
+        elsif ( defined ${ $config->{'view-copyright'} } ) {
+            $authn->login_user();
+            $content->view_copyright( ${ $config->{'view-copyright'} } );
+            Apache::Sling::Print::print_result($content);
+        }
         elsif ( defined ${ $config->{'view-description'} } ) {
             $authn->login_user();
             $content->view_description( ${ $config->{'view-description'} } );
+            Apache::Sling::Print::print_result($content);
+        }
+        elsif ( defined ${ $config->{'view-tags'} } ) {
+            $authn->login_user();
+            $content->view_tags( ${ $config->{'view-tags'} } );
             Apache::Sling::Print::print_result($content);
         }
         elsif ( defined ${ $config->{'view-title'} } ) {
