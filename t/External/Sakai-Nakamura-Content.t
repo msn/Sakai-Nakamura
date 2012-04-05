@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::Exception;
-use Test::More tests => 21;
+use Test::More tests => 22;
 
 my $sling_host = 'http://localhost:8080';
 my $super_user = 'admin';
@@ -57,6 +57,7 @@ ok( defined $content,
 print {$tmp_content_handle} "Test file\n";
 close $tmp_content_handle;
 ok( $content->upload_file($tmp_content_name), 'Check upload_file function' );
+ok( $content->comment_add('Test comment'), 'Check comment_add function' );
 ok( $content->view_copyright(), 'Check view_copyright function' );
 ok( $content->view_description(), 'Check view_description function' );
 ok( $content->view_tags(), 'Check view_tags function' );

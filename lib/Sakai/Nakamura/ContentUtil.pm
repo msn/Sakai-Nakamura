@@ -71,6 +71,33 @@ sub add_file_perms_eval {
 
 #}}}
 
+#{{{sub comment_add_setup
+
+sub comment_add_setup {
+    my ( $base_url, $content_path, $comment ) = @_;
+    if ( !defined $base_url ) { croak 'No base url defined to add against!'; }
+    if ( !defined $content_path ) {
+        croak 'No content path to add comments to!';
+    }
+    if ( !defined $comment ) {
+        croak 'No comment provided to add!';
+    }
+    my $post_variables = "\$post_variables = ['comment','$comment']";
+    return
+"post $base_url/$content_path.comments $post_variables";
+}
+
+#}}}
+
+#{{{sub comment_add_eval
+
+sub comment_add_eval {
+    my ($res) = @_;
+    return ( ${$res}->code eq '201' );
+}
+
+#}}}
+
 1;
 
 __END__

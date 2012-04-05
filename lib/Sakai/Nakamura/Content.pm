@@ -32,6 +32,33 @@ sub new {
 
 #}}}
 
+#{{{sub comment_add
+sub comment_add {
+    my ( $content, $comment, $remote_dest ) = @_;
+    $remote_dest =
+      defined $remote_dest
+      ? Apache::Sling::URL::strip_leading_slash($remote_dest)
+      : $content->{'Path'};
+
+    my $res      = Apache::Sling::Request::request(
+        \$content,
+        Sakai::Nakamura::ContentUtil::comment_add_setup(
+            $content->{'BaseURL'},    $remote_dest,
+            $comment
+        )
+    );
+    my $success = Sakai::Nakamura::ContentUtil::comment_add_eval($res);
+    my $message = (
+        $success
+        ? 'Comment added'
+        : 'Problem adding comment to content'
+    );
+    $content->set_results( "$message", $res );
+    return $success;
+}
+
+#}}}
+
 #{{{sub upload_file
 sub upload_file {
     my ( $content, $local_path ) = @_;
