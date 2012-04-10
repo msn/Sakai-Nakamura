@@ -7,6 +7,7 @@ use strict;
 use warnings;
 use Carp;
 use base qw(Apache::Sling::User);
+use Sakai::Nakamura;
 use Sakai::Nakamura::UserUtil;
 
 require Exporter;
@@ -31,6 +32,26 @@ sub check_exists {
     $message .= ( $success ? 'exists!' : 'does not exist!' );
     $user->set_results( "$message", $res );
     return $success;
+}
+
+#}}}
+
+#{{{sub config
+
+sub config {
+    my ($class) = @_;
+    my $me;
+    my $profile_field;
+    my $profile_section;
+    my $profile_update;
+    my $profile_value;
+    my $user_config = $class->SUPER::user_config();
+    $user_config->{'me'}              = \$me;
+    $user_config->{'profile-field'}   = \$profile_field;
+    $user_config->{'profile-section'} = \$profile_section;
+    $user_config->{'profile-update'}  = \$profile_update;
+    $user_config->{'profile-value'}   = \$profile_value;
+    return $user_config;
 }
 
 #}}}
@@ -70,6 +91,53 @@ sub profile_update {
         : 'Problem fetching details for current user'
     );
     $user->set_results( "$message", $res );
+    return $success;
+}
+
+#}}}
+
+#{{{sub run
+sub run {
+    my ( $nakamura, $config ) = @_;
+    if ( !defined $config ) {
+        croak 'No user config supplied!';
+    }
+    my $authn =
+      defined $nakamura->{'Authn'}
+      ? ${ $nakamura->{'Authn'} }
+      : new Sakai::Nakamura::Authn( \$nakamura );
+
+    my $success = 1;
+
+    if ( defined ${ $config->{'exists'} } ) {
+        $authn->login_user();
+        my $user = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
+            $nakamura->{'Log'} );
+        $success = $user->check_exists( ${ $config->{'exists'} } );
+        Apache::Sling::Print::print_result($user);
+    }
+    elsif ( defined ${ $config->{'me'} } ) {
+        $authn->login_user();
+        my $user = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
+            $nakamura->{'Log'} );
+        $success = $user->me();
+        Apache::Sling::Print::print_result($user);
+    }
+    elsif ( defined ${ $config->{'profile-update'} } ) {
+        $authn->login_user();
+        my $user = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
+            $nakamura->{'Log'} );
+        $success = $user->profile_update(
+            ${ $config->{'profile-field'} },
+            ${ $config->{'profile-value'} },
+            ${ $config->{'profile-update'} },
+            ${ $config->{'profile-section'} }
+        );
+        Apache::Sling::Print::print_result($user);
+    }
+    else {
+        $success = $nakamura->SUPER::run($config);
+    }
     return $success;
 }
 

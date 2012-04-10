@@ -7,7 +7,10 @@ use strict;
 use warnings;
 use Carp;
 use JSON;
+use Getopt::Long qw(:config bundling);
+use Pod::Usage;
 use Sakai::Nakamura::ContentUtil;
+use Sakai::Nakamura;
 
 use base qw(Apache::Sling::Content);
 
@@ -15,7 +18,7 @@ require Exporter;
 
 use base qw(Exporter);
 
-our @EXPORT_OK = ();
+our @EXPORT_OK = qw(run);
 
 our $VERSION = '0.11';
 
@@ -26,8 +29,43 @@ sub new {
 
     # Add a class variable to track the last content path seen:
     $content->{'Path'} = q{};
+    # Add a class variable to track the last comment made:
+    $content->{'Comment'} = q{};
     bless $content, $class;
     return $content;
+}
+
+#}}}
+
+#{{{sub command_line
+sub command_line {
+  my @ARGV = @_;
+  # options parsing
+  my $nakamura = Sakai::Nakamura->new;
+  my $config   = config($nakamura);
+
+  GetOptions(
+    $config,              'auth=s',
+    'help|?',             'log|L=s',
+    'man|M',              'pass|p=s',
+    'threads|t=s',        'url|U=s',
+    'user|u=s',           'verbose|v+',
+    'add|a',              'additions|A=s',
+    'copy|c',             'delete|d',
+    'exists|e',           'filename|n=s',
+    'local|l=s',          'move|m',
+    'property|P=s',       'remote|r=s',
+    'remote-source|S=s',  'replace|R',
+    'view|V',             'view-copyright=s',
+    'view-description=s', 'view-tags=s',
+    'view-title=s',       'view-visibility=s'
+  ) or help();
+
+  if ( $nakamura->{'Help'} ) { help(); }
+  if ( $nakamura->{'Man'} )  { pod2usage( -exitstatus => 0, -verbose => 2 ); }
+
+  run($nakamura,$config);
+    return 1;
 }
 
 #}}}
@@ -59,6 +97,198 @@ sub comment_add {
 
 #}}}
 
+#{{{sub config
+
+sub config {
+    my ($class) = @_;
+    my $view_copyright;
+    my $view_description;
+    my $view_tags;
+    my $view_title;
+    my $view_visibility;
+    my $content_config = $class->SUPER::content_config();
+    $content_config->{'view-copyright'}   = \$view_copyright;
+    $content_config->{'view-description'} = \$view_description;
+    $content_config->{'view-tags'}        = \$view_tags;
+    $content_config->{'view-title'}       = \$view_title;
+    $content_config->{'view-visibility'}  = \$view_visibility;
+    return $content_config;
+}
+
+#}}}
+
+#{{{ sub help
+sub help {
+
+  print "Usage: perl $0 [-OPTIONS [-MORE_OPTIONS]] [--] [PROGRAM_ARG1 ...]\n";
+  print "The following options are accepted:\n";
+
+  print " --additions or -A (file)          - File containing list of content to be uploaded.\n";
+  print " --add or -a                       - Add content.\n";
+  print " --auth (type)                     - Specify auth type. If ommitted, default is used.\n";
+  print " --copy or -c                      - Copy content.\n";
+  print " --delete or -d                    - Delete content.\n";
+  print " --filename or -n (filename)       - Specify file name to use for content upload.\n";
+  print " --help or -?                      - view the script synopsis and options.\n";
+  print " --local or -l (localPath)         - Local path to content to upload.\n";
+  print " --log or -L (log)                 - Log script output to specified log file.\n";
+  print " --man or -M                       - view the full script documentation.\n";
+  print " --move or -m                      - Move content.\n";
+  print " --pass or -p (password)           - Password of user performing content manipulations.\n";
+  print " --property or -P (property)       - Specify property to set on node.\n";
+  print " --remote or -r (remoteNode)       - specify remote destination under JCR root to act on.\n";
+  print " --remote-source or -S (remoteSrc) - specify remote source node under JCR root to act on.\n";
+  print " --replace or -R                   - when copying or moving, overwrite remote destination if it exists.\n";
+  print " --threads or -t (threads)         - Used with -A, defines number of parallel\n";
+  print "                                     processes to have running through file.\n";
+  print " --url or -U (URL)                 - URL for system being tested against.\n";
+  print " --user or -u (username)           - Name of user to perform content manipulations as.\n";
+  print " --verbose or -v or -vv or -vvv    - Increase verbosity of output.\n";
+  print " --view or -V (actOnContent)       - view details for specified content in json format.\n";
+  print " --view-copyright (remoteNode)     - view copyright for specified remote content.\n";
+  print " --view-description (remoteNode)   - view description for specified remote content.\n";
+  print " --view-tags (remoteNode)          - view tags for specified remote content.\n";
+  print " --view-title (remoteNode)         - view title for specified remote content.\n";
+  print " --view-visibility (remoteNode)    - view visibility setting for specified remote content.\n\n";
+
+  print "Options may be merged together. -- stops processing of options.\n";
+  print "Space is not required between options and their arguments.\n";
+  print "For full details run: perl $0 --man\n";
+
+#content perl script. Provides a means of uploading content into sling from the
+#command line. The script also acts as a reference implementation for the
+#Content perl library.
+
+=head1 Example Usage
+
+=over
+
+=item Authenticate and add a node at /test:
+
+ perl content.pl -U http://localhost:8080 -a -r /test -u admin -p admin
+
+=item Authenticate and add a node at /test with property p1 set to v1:
+
+ perl content.pl -U http://localhost:8080 -a -r /test -P p1=v1 -u admin -p admin
+
+=item Authenticate and add a node at /test with property p1 set to v1, and p2 set to v2:
+
+ perl content.pl -U http://localhost:8080 -a -r /test -P p1=v1 -P p2=v2 -u admin -p admin
+
+=item View json for node at /test:
+
+ perl content.pl -U http://localhost:8080 -V -r /test
+
+=item Check whether node at /test exists:
+
+ perl content.pl -U http://localhost:8080 -V -r /test
+
+=item Authenticate and copy content at /test to /test2
+
+ perl content.pl -U http://localhost:8080 -c -S /test -r /test2 -u admin -p admin
+
+=item Authenticate and move content at /test to /test2, replacing test2 if it already exists
+
+ perl content.pl -U http://localhost:8080 -m -S /test -r /test2 -R -u admin -p admin
+
+=item Authenticate and delete content at /test
+
+ perl content.pl -U http://localhost:8080 -d -r /test -u admin -p admin
+
+=back
+
+=cut
+
+}
+#}}}
+
+#{{{sub run
+sub run {
+    my ( $nakamura, $config ) = @_;
+    if ( !defined $config ) {
+        croak 'No content config supplied!';
+    }
+    $nakamura->check_forks;
+    ${ $config->{'remote'} } =
+      Apache::Sling::URL::strip_leading_slash( ${ $config->{'remote'} } );
+    ${ $config->{'remote-source'} } = Apache::Sling::URL::strip_leading_slash(
+        ${ $config->{'remote-source'} } );
+    my $authn =
+      defined $nakamura->{'Authn'}
+      ? ${ $nakamura->{'Authn'} }
+      : new Sakai::Nakamura::Authn( \$nakamura );
+
+    my $success = 1;
+
+    if ( defined ${ $config->{'additions'} } ) {
+        my $message =
+          "Adding content from file \"" . ${ $config->{'additions'} } . "\":\n";
+        Apache::Sling::Print::print_with_lock( "$message", $nakamura->{'Log'} );
+        my @childs = ();
+        for my $i ( 0 .. $nakamura->{'Threads'} ) {
+            my $pid = fork;
+            if ($pid) { push @childs, $pid; }    # parent
+            elsif ( $pid == 0 ) {                # child
+                    # Create a new separate user agent per fork in order to
+                    # ensure cookie stores are separate, then log the user in:
+                $authn->{'LWP'} = $authn->user_agent($nakamura->{'Referer'});
+                $authn->login_user();
+                my $content =
+                  new Sakai::Nakamura::Content( \$authn, $nakamura->{'Verbose'},
+                    $nakamura->{'Log'} );
+                $content->upload_from_file( ${ $config->{'additions'} },
+                    $i, $nakamura->{'Threads'} );
+                exit 0;
+            }
+            else {
+                croak "Could not fork $i!";
+            }
+        }
+        foreach (@childs) { waitpid $_, 0; }
+    }
+    else {
+        my $content =
+          new Sakai::Nakamura::Content( \$authn, $nakamura->{'Verbose'},
+            $nakamura->{'Log'} );
+        if ( defined ${ $config->{'local'} } ) {
+            $authn->login_user();
+            $success = $content->upload_file( ${ $config->{'local'} } );
+            Apache::Sling::Print::print_result($content);
+        }
+        elsif ( defined ${ $config->{'view-copyright'} } ) {
+            $authn->login_user();
+            $success = $content->view_copyright( ${ $config->{'view-copyright'} } );
+            Apache::Sling::Print::print_result($content);
+        }
+        elsif ( defined ${ $config->{'view-description'} } ) {
+            $authn->login_user();
+            $success = $content->view_description( ${ $config->{'view-description'} } );
+            Apache::Sling::Print::print_result($content);
+        }
+        elsif ( defined ${ $config->{'view-tags'} } ) {
+            $authn->login_user();
+            $success = $content->view_tags( ${ $config->{'view-tags'} } );
+            Apache::Sling::Print::print_result($content);
+        }
+        elsif ( defined ${ $config->{'view-title'} } ) {
+            $authn->login_user();
+            $success = $content->view_title( ${ $config->{'view-title'} } );
+            Apache::Sling::Print::print_result($content);
+        }
+        elsif ( defined ${ $config->{'view-visibility'} } ) {
+            $authn->login_user();
+            $success = $content->view_visibility( ${ $config->{'view-visibility'} } );
+            Apache::Sling::Print::print_result($content);
+        }
+        else {
+            $success = $content->SUPER::run($nakamura,$config);
+        }
+    }
+    return $success;
+}
+
+#}}}
+
 #{{{sub upload_file
 sub upload_file {
     my ( $content, $local_path ) = @_;
@@ -79,17 +309,17 @@ sub upload_file {
     }
 
     # Obtain path from POST response body:
-    my $content_path = ( ${$res}->content =~ m/"_path":"([^"]*)"/ )[0];
+    my $content_path = ( ${$res}->content =~ m/"_path":"([^"]*)"/x )[0];
     if ( !defined $content_path ) {
         croak 'Content path not found in JSON response to file upload';
     }
     $content_path = "p/$content_path";
     my $content_filename =
-      ( ${$res}->content =~ m/"sakai:pooled-content-file-name":"([^"]*)"/ )[0];
-    if ( !$content_filename =~ /.*\..*/ ) {
+      ( ${$res}->content =~ m/"sakai:pooled-content-file-name":"([^"]*)"/x )[0];
+    if ( !$content_filename =~ /.*\..*/x ) {
         croak "Content filename: '$content_filename' has no file extension";
     }
-    my $content_fileextension = ( $content_filename =~ m/([^.]+)$/ )[0];
+    my $content_fileextension = ( $content_filename =~ m/([^.]+)$/x )[0];
 
     # Add Meta data for file:
     $res = Apache::Sling::Request::request(

@@ -6,6 +6,7 @@ use 5.008008;
 use strict;
 use warnings;
 use Carp;
+use Sakai::Nakamura;
 use Sakai::Nakamura::WorldUtil;
 
 require Exporter;
@@ -96,7 +97,6 @@ sub add_from_file {
                 }
             }
             elsif ( $fork_id == ( $count++ % $number_of_forks ) ) {
-                my @properties;
                 if ( $csv->parse($_) ) {
                     my @columns      = $csv->fields();
                     my $columns_size = @columns;
@@ -152,6 +152,106 @@ sub add_from_file {
         croak 'Problem adding from file!';
     }
     return 1;
+}
+
+#}}}
+
+#{{{sub config
+
+sub config {
+    my ($class) = @_;
+    my $add;
+    my $additions;
+    my $id;
+    my $title;
+    my $description;
+    my $tags;
+    my $visibility;
+    my $joinability;
+    my $world_template;
+    my %world_config = (
+        'auth'           => \$class->{'Auth'},
+        'help'           => \$class->{'Help'},
+        'log'            => \$class->{'Log'},
+        'man'            => \$class->{'Man'},
+        'pass'           => \$class->{'Pass'},
+        'threads'        => \$class->{'Threads'},
+        'url'            => \$class->{'URL'},
+        'user'           => \$class->{'User'},
+        'verbose'        => \$class->{'Verbose'},
+        'add'            => \$add,
+        'additions'      => \$additions,
+        'title'          => \$title,
+        'description'    => \$description,
+        'tags'           => \$tags,
+        'visibility'     => \$visibility,
+        'joinability'    => \$joinability,
+        'world_template' => \$world_template
+    );
+
+    return \%world_config;
+}
+
+#}}}
+
+#{{{sub run
+sub run {
+    my ( $nakamura, $config ) = @_;
+    if ( !defined $config ) {
+        croak 'No world config supplied!';
+    }
+    $nakamura->SUPER::check_forks;
+    my $authn =
+      defined $nakamura->{'Authn'}
+      ? ${ $nakamura->{'Authn'} }
+      : new Sakai::Nakamura::Authn( \$nakamura );
+
+    my $success = 1;
+
+    if ( defined ${ $config->{'additions'} } ) {
+        my $message =
+          "Adding worlds from file \"" . ${ $config->{'additions'} } . "\":\n";
+        Apache::Sling::Print::print_with_lock( "$message", $nakamura->{'Log'} );
+        my @childs = ();
+        for my $i ( 0 .. $nakamura->{'Threads'} ) {
+            my $pid = fork;
+            if ($pid) { push @childs, $pid; }    # parent
+            elsif ( $pid == 0 ) {                # child
+                    # Create a new separate user agent per fork in order to
+                    # ensure cookie stores are separate, then log the user in:
+                $authn->{'LWP'} = $authn->user_agent($nakamura->{'Referer'});
+                $authn->login_user();
+                my $user =
+                  new Sakai::Nakamura::World( \$authn, $nakamura->{'Verbose'},
+                    $nakamura->{'Log'} );
+                $user->add_from_file( ${ $config->{'additions'} },
+                    $i, $nakamura->{'Threads'} );
+                exit 0;
+            }
+            else {
+                croak "Could not fork $i!";
+            }
+        }
+        foreach (@childs) { waitpid $_, 0; }
+    }
+    else {
+        $authn->login_user();
+        my $world = new Sakai::Nakamura::World( \$authn, $nakamura->{'Verbose'},
+            $nakamura->{'Log'} );
+        if ( defined ${ $config->{'add'} } ) {
+            $success = $world->add(
+                ${ $config->{'add'} },
+                ${ $config->{'title'} },
+                ${ $config->{'description'} },
+                ${ $config->{'tags'} },
+                ${ $config->{'visibility'} },
+                ${ $config->{'joinability'} },
+                ${ $config->{'world_template'} }
+            );
+            Apache::Sling::Print::print_result($world);
+        }
+    }
+    return $success;
 }
 
 #}}}
