@@ -6,6 +6,7 @@ use 5.008008;
 use strict;
 use warnings;
 use Carp;
+use Text::CSV;
 use Sakai::Nakamura;
 use Sakai::Nakamura::WorldUtil;
 
@@ -200,7 +201,7 @@ sub run {
     if ( !defined $config ) {
         croak 'No world config supplied!';
     }
-    $nakamura->SUPER::check_forks;
+    $nakamura->check_forks;
     my $authn =
       defined $nakamura->{'Authn'}
       ? ${ $nakamura->{'Authn'} }

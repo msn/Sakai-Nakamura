@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 20;
+use Test::More tests => 24;
 use Test::Exception;
 BEGIN { use_ok( 'Sakai::Nakamura' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::Authn' ); }
@@ -49,3 +49,8 @@ $file = "id\n1,2";
 throws_ok { $world->add_from_file(\$file) } qr/Found "2" columns. There should have been "1"./, 'Check add_from_file function croaks with wrong number of columns';
 $file = "id,title,description,tags,visibility,joinability,worldtemplate,badheader\n1,2,3,4,5,6,7,8";
 throws_ok { $world->add_from_file(\$file,0,1) } qr/Unsupported column heading "badheader" - please use: "id", "title", "description", "tags", "visibility", "joinability", "worldtemplate"/, 'Check add_from_file function croaks with bad column heading';
+
+ok( my $world_config = Sakai::Nakamura::World::config($nakamura), 'check world config function' );
+ok( defined $world_config );
+throws_ok { Sakai::Nakamura::World::run( $nakamura ) } qr/No world config supplied!/, 'Check run function croaks without config';
+ok( Sakai::Nakamura::World::run( $nakamura, $world_config ) );

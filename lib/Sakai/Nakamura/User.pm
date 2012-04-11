@@ -45,7 +45,7 @@ sub config {
     my $profile_section;
     my $profile_update;
     my $profile_value;
-    my $user_config = $class->SUPER::user_config();
+    my $user_config = $class->SUPER::config();
     $user_config->{'me'}              = \$me;
     $user_config->{'profile-field'}   = \$profile_field;
     $user_config->{'profile-section'} = \$profile_section;
@@ -136,7 +136,7 @@ sub run {
         Apache::Sling::Print::print_result($user);
     }
     else {
-        $success = $nakamura->SUPER::run($config);
+        $success = Apache::Sling::User::run($nakamura,$config);
     }
     return $success;
 }

@@ -106,7 +106,7 @@ sub config {
     my $view_tags;
     my $view_title;
     my $view_visibility;
-    my $content_config = $class->SUPER::content_config();
+    my $content_config = $class->SUPER::config();
     $content_config->{'view-copyright'}   = \$view_copyright;
     $content_config->{'view-description'} = \$view_description;
     $content_config->{'view-tags'}        = \$view_tags;
@@ -281,7 +281,7 @@ sub run {
             Apache::Sling::Print::print_result($content);
         }
         else {
-            $success = $content->SUPER::run($nakamura,$config);
+            $success = Apache::Sling::Content::run($nakamura,$config);
         }
     }
     return $success;

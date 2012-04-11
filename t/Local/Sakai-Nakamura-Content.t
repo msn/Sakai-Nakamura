@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 19;
+use Test::More tests => 23;
 use Test::Exception;
 BEGIN { use_ok( 'Sakai::Nakamura' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::Authn' ); }
@@ -45,3 +45,9 @@ my $file = "\n";
 throws_ok { $content->upload_from_file() } qr/File to upload from not defined/, 'Check upload_from_file function croaks without file';
 throws_ok { $content->upload_from_file(\$file) } qr/Problem parsing content to add: ''/, 'Check upload_from_file function croaks with blank file';
 throws_ok { $content->upload_from_file('/tmp/__non__--__tnetsixe__') } qr{Problem opening file: '/tmp/__non__--__tnetsixe__'}, 'Check upload_from_file function croaks with non-existent file specified';
+
+ok( my $content_config = Sakai::Nakamura::Content::config($nakamura), 'check content config function' );
+ok( defined $content_config );
+throws_ok { Sakai::Nakamura::Content::run( $nakamura ) } qr/No content config supplied!/, 'Check run function croaks without config';
+ok( Sakai::Nakamura::Content::run( $nakamura, $content_config ) );
+
