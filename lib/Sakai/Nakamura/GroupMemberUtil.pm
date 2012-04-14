@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-package Sakai::Nakamura::GroupUtil;
+package Sakai::Nakamura::GroupMemberUtil;
 
 use 5.008001;
 use strict;
@@ -50,7 +50,7 @@ __END__
 
 =head1 NAME
 
-Sakai::Nakamura::GroupUtil Methods to generate and check HTTP requests required for manipulating groups.
+Sakai::Nakamura::GroupMemberUtil Methods to generate and check HTTP requests required for manipulating groups.
 
 =head1 ABSTRACT
 
@@ -70,11 +70,11 @@ Check result of adding a member to a role in a group in the system.
 
 =head1 USAGE
 
-use Sakai::Nakamura::GroupUtil;
+use Sakai::Nakamura::GroupMemberUtil;
 
 =head1 DESCRIPTION
 
-GroupUtil perl library essentially provides the request strings needed to
+GroupMemberUtil perl library essentially provides the request strings needed to
 interact with group functionality exposed over the system rest interfaces.
 
 Each interaction has a setup and eval method. setup provides the request,

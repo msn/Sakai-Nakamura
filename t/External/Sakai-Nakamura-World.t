@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::Exception;
-use Test::More tests => 11;
+use Test::More tests => 16;
 
 my $sling_host = 'http://localhost:8080';
 my $super_user = 'admin';
@@ -20,15 +20,15 @@ BEGIN { use_ok( 'Sakai::Nakamura::World' ); }
 my $test_world = "world_test_world_$$";
 
 # sling object:
-my $sling = Sakai::Nakamura->new();
-isa_ok $sling, 'Sakai::Nakamura', 'sling';
-$sling->{'URL'}     = $sling_host;
-$sling->{'User'}    = $super_user;
-$sling->{'Pass'}    = $super_pass;
-$sling->{'Verbose'} = $verbose;
-$sling->{'Log'}     = $log;
+my $nakamura = Sakai::Nakamura->new();
+isa_ok $nakamura, 'Sakai::Nakamura', 'sling';
+$nakamura->{'URL'}     = $sling_host;
+$nakamura->{'User'}    = $super_user;
+$nakamura->{'Pass'}    = $super_pass;
+$nakamura->{'Verbose'} = $verbose;
+$nakamura->{'Log'}     = $log;
 # authn object:
-my $authn = Sakai::Nakamura::Authn->new( \$sling );
+my $authn = Sakai::Nakamura::Authn->new( \$nakamura );
 isa_ok $authn, 'Sakai::Nakamura::Authn', 'authentication';
 ok( $authn->login_user(), "Log in successful" );
 # world object:
@@ -50,3 +50,12 @@ ok( $world->add_from_file(\$upload,0,3), 'Check add_from_file function with thre
 # TODO: Test why creation is fine with a non-existent template.
 # ok( $world->add( $test_world, 'title', 'description', 'tags', 'public', 'yes', '__bad__world__template__' ),
   #  "World Test: World \"$test_world\" added successfully." );
+
+
+ok( my $world_config = Sakai::Nakamura::World::config($nakamura), 'check world config function' );
+ok( defined $world_config );
+throws_ok { Sakai::Nakamura::World::run( $nakamura ) } qr/No world config supplied!/, 'Check run function croaks without config';
+ok( Sakai::Nakamura::World::run( $nakamura, $world_config ) );
+my $world_name = "nakamura_test5_world_$$";
+$world_config->{'add'} = \$world_name;
+ok( Sakai::Nakamura::World::run( $nakamura, $world_config ) );

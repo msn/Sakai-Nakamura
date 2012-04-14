@@ -3,7 +3,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 31;
+use Test::More tests => 40;
+use Test::Exception;
 
 my $sling_host = 'http://localhost:8080';
 my $super_user = 'admin';
@@ -15,6 +16,7 @@ BEGIN { use_ok( 'Sakai::Nakamura' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::Authn' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::User' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::Group' ); }
+BEGIN { use_ok( 'Sakai::Nakamura::GroupMember' ); }
 
 # test user name:
 my $test_user = "user_test_user_$$";
@@ -27,15 +29,15 @@ my @test_properties = ( "email=test\@example.com" );
 my $test_group = "g-user_test_group_$$";
 
 # sling object:
-my $sling = Sakai::Nakamura->new();
-isa_ok $sling, 'Sakai::Nakamura', 'sling';
-$sling->{'URL'}     = $sling_host;
-$sling->{'User'}    = $super_user;
-$sling->{'Pass'}    = $super_pass;
-$sling->{'Verbose'} = $verbose;
-$sling->{'Log'}     = $log;
+my $nakamura = Sakai::Nakamura->new();
+isa_ok $nakamura, 'Sakai::Nakamura', 'sling';
+$nakamura->{'URL'}     = $sling_host;
+$nakamura->{'User'}    = $super_user;
+$nakamura->{'Pass'}    = $super_pass;
+$nakamura->{'Verbose'} = $verbose;
+$nakamura->{'Log'}     = $log;
 # authn object:
-my $authn = Sakai::Nakamura::Authn->new( \$sling );
+my $authn = Sakai::Nakamura::Authn->new( \$nakamura );
 isa_ok $authn, 'Sakai::Nakamura::Authn', 'authentication';
 ok( $authn->login_user(), "Log in successful" );
 # user object:
@@ -44,12 +46,17 @@ isa_ok $user, 'Sakai::Nakamura::User', 'user';
 # group object:
 my $group = Sakai::Nakamura::Group->new( \$authn, $verbose, $log );
 isa_ok $group, 'Sakai::Nakamura::Group', 'group';
+# group_member object:
+my $group_member = Sakai::Nakamura::GroupMember->new( \$authn, $verbose, $log );
+isa_ok $group_member, 'Sakai::Nakamura::GroupMember', 'group_member';
 
 # Run tests:
 ok( defined $user,
     "User Test: Sling User Object successfully created." );
 ok( defined $group,
     "User Test: Sling Group Object successfully created." );
+ok( defined $group_member,
+    "User Test: Sling Group Member Object successfully created." );
 
 # add user:
 ok( $user->add( $test_user, $test_pass, \@test_properties ),
@@ -76,18 +83,18 @@ ok( $group->add( $test_group, \@test_properties ),
 ok( $group->check_exists( $test_group ),
     "User Test: Group \"$test_group\" exists." );
 # Add member to group:
-ok( $group->member_add( $test_group, $test_user ),
+ok( $group_member->add( $test_group, $test_user ),
     "User Test: Member \"$test_user\" added to \"$test_group\"." );
-ok( $group->member_exists( $test_group, $test_user ),
+ok( $group_member->check_exists( $test_group, $test_user ),
     "User Test: Member \"$test_user\" exists in \"$test_group\"." );
 # Check can still update properties:
 @test_properties = ( "user_test_edit_after_group_join=true" );
 ok( $user->update( $test_user, \@test_properties ),
     "User Test: User \"$test_user\" updated successfully." );
 # Delete test user from group:
-ok( $group->member_delete( $test_group, $test_user ),
+ok( $group_member->delete( $test_group, $test_user ),
     "User Test: Member \"$test_user\" deleted from \"$test_group\"." );
-ok( ! $group->member_exists( $test_group, $test_user ),
+ok( ! $group_member->check_exists( $test_group, $test_user ),
     "User Test: Member \"$test_user\" should no longer exist in \"$test_group\"." );
 # Cleanup Group:
 ok( $group->del( $test_group ),
@@ -117,3 +124,15 @@ ok( $user->me(), "" );
 
 ok( ! $user->check_exists( $test_user ),
     "User Test: User \"$test_user\" should no longer exist." );
+
+ok( my $user_config = Sakai::Nakamura::User::config($nakamura), 'check user config function' );
+ok( defined $user_config );
+throws_ok { Sakai::Nakamura::User::run( $nakamura ) } qr/No user config supplied!/, 'Check user_run function croaks without config';
+ok( Sakai::Nakamura::User::run( $nakamura, $user_config ) );
+my $me = 1;
+$user_config->{'me'} = \$me;
+ok( Sakai::Nakamura::User::run( $nakamura, $user_config ) );
+$user_config->{'me'} = undef;
+my $profile_update = $super_user;
+$user_config->{'profile-update'} = \$profile_update;
+throws_ok { Sakai::Nakamura::User::run( $nakamura, $user_config ) } qr/No profile field to update specified!/, 'Check user_run function croaks for profile_update without sufficient values.';

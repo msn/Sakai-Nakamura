@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::Exception;
-use Test::More tests => 22;
+use Test::More tests => 26;
 
 my $sling_host = 'http://localhost:8080';
 my $super_user = 'admin';
@@ -18,13 +18,13 @@ BEGIN { use_ok( 'Sakai::Nakamura::Authn' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::Content' ); }
 
 # sling object:
-my $sling = Sakai::Nakamura->new();
-isa_ok $sling, 'Sakai::Nakamura', 'sling';
-$sling->{'URL'}     = $sling_host;
-$sling->{'Verbose'} = $verbose;
-$sling->{'Log'}     = $log;
+my $nakamura = Sakai::Nakamura->new();
+isa_ok $nakamura, 'Sakai::Nakamura', 'sling';
+$nakamura->{'URL'}     = $sling_host;
+$nakamura->{'Verbose'} = $verbose;
+$nakamura->{'Log'}     = $log;
 # authn object:
-my $authn = Sakai::Nakamura::Authn->new( \$sling );
+my $authn = Sakai::Nakamura::Authn->new( \$nakamura );
 isa_ok $authn, 'Sakai::Nakamura::Authn', 'authentication';
 ok( $authn->login_user(), "Log in successful" );
 # content object:
@@ -38,11 +38,11 @@ throws_ok { $content->upload_file($tmp_content_name) } qr{Content: "$tmp_content
 unlink($tmp_content_name);
 
 # Recreate objects with user / pass set:
-$sling->{'User'}    = $super_user;
-$sling->{'Pass'}    = $super_pass;
+$nakamura->{'User'}    = $super_user;
+$nakamura->{'Pass'}    = $super_pass;
 
 # authn object:
-$authn = Sakai::Nakamura::Authn->new( \$sling );
+$authn = Sakai::Nakamura::Authn->new( \$nakamura );
 isa_ok $authn, 'Sakai::Nakamura::Authn', 'authentication';
 ok( $authn->login_user(), "Log in successful" );
 # content object:
@@ -73,3 +73,8 @@ ok( $content->upload_from_file(\$upload,0,2), 'Check upload_from_file function w
 unlink($tmp_content_name);
 unlink($tmp_content2_name);
 throws_ok{ $content->upload_from_file($tmp_content_name,0,1)} qr{Problem opening file: '$tmp_content_name'}, 'Check upload_file function croaks with a missing file';
+
+ok( my $content_config = Sakai::Nakamura::Content::config($nakamura), 'check content config function' );
+ok( defined $content_config );
+throws_ok { Sakai::Nakamura::Content::run( $nakamura ) } qr/No content config supplied!/, 'Check run function croaks without config';
+ok( Sakai::Nakamura::Content::run( $nakamura, $content_config ) );

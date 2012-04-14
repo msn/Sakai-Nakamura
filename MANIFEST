@@ -4,8 +4,9 @@ lib/Sakai/Nakamura/AuthnUtil.pm
 lib/Sakai/Nakamura/Authz.pm
 lib/Sakai/Nakamura/Content.pm
 lib/Sakai/Nakamura/ContentUtil.pm
+lib/Sakai/Nakamura/GroupMember.pm
+lib/Sakai/Nakamura/GroupMemberUtil.pm
 lib/Sakai/Nakamura/Group.pm
-lib/Sakai/Nakamura/GroupUtil.pm
 lib/Sakai/Nakamura/LDAPSynch.pm
 lib/Sakai/Nakamura.pm
 lib/Sakai/Nakamura/User.pm
@@ -17,9 +18,10 @@ Makefile.PL
 MANIFEST
 META.yml
 README
-scripts/user.pl
+scripts/nakamura.pl
 t/External/Sakai-Nakamura-Authn.t
 t/External/Sakai-Nakamura-Content.t
+t/External/Sakai-Nakamura-GroupMember.t
 t/External/Sakai-Nakamura-Group.t
 t/External/Sakai-Nakamura.t
 t/External/Sakai-Nakamura-User.t
@@ -28,8 +30,9 @@ t/Local/Sakai-Nakamura-Authn.t
 t/Local/Sakai-Nakamura-AuthnUtil.t
 t/Local/Sakai-Nakamura-Content.t
 t/Local/Sakai-Nakamura-ContentUtil.t
+t/Local/Sakai-Nakamura-GroupMember.t
+t/Local/Sakai-Nakamura-GroupMemberUtil.t
 t/Local/Sakai-Nakamura-Group.t
-t/Local/Sakai-Nakamura-GroupUtil.t
 t/Local/Sakai-Nakamura-LDAPSynch.t
 t/Local/Sakai-Nakamura.t
 t/Local/Sakai-Nakamura-User.t
