@@ -54,8 +54,8 @@ ok( $world->add_from_file(\$upload,0,3), 'Check add_from_file function with thre
 
 ok( my $world_config = Sakai::Nakamura::World::config($nakamura), 'check world config function' );
 ok( defined $world_config );
-throws_ok { Sakai::Nakamura::World::run( $nakamura ) } qr/No world config supplied!/, 'Check run function croaks without config';
-ok( Sakai::Nakamura::World::run( $nakamura, $world_config ) );
+throws_ok { Sakai::Nakamura::World->run( $nakamura ) } qr/No world config supplied!/, 'Check run function croaks without config';
+ok( Sakai::Nakamura::World->run( $nakamura, $world_config ) );
 my $world_name = "nakamura_test5_world_$$";
 $world_config->{'add'} = \$world_name;
-ok( Sakai::Nakamura::World::run( $nakamura, $world_config ) );
+ok( Sakai::Nakamura::World->run( $nakamura, $world_config ) );

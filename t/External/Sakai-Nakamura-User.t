@@ -111,12 +111,12 @@ ok( ! $user->check_exists( $test_user ),
 
 ok( my $user_config = Sakai::Nakamura::User::config($nakamura), 'check user config function' );
 ok( defined $user_config );
-throws_ok { Sakai::Nakamura::User::run( $nakamura ) } qr/No user config supplied!/, 'Check user_run function croaks without config';
-ok( Sakai::Nakamura::User::run( $nakamura, $user_config ) );
+throws_ok { Sakai::Nakamura::User->run( $nakamura ) } qr/No user config supplied!/, 'Check user_run function croaks without config';
+ok( Sakai::Nakamura::User->run( $nakamura, $user_config ) );
 my $me = 1;
 $user_config->{'me'} = \$me;
-ok( Sakai::Nakamura::User::run( $nakamura, $user_config ) );
+ok( Sakai::Nakamura::User->run( $nakamura, $user_config ) );
 $user_config->{'me'} = undef;
 my $profile_update = $super_user;
 $user_config->{'profile-update'} = \$profile_update;
-throws_ok { Sakai::Nakamura::User::run( $nakamura, $user_config ) } qr/No profile field to update specified!/, 'Check user_run function croaks for profile_update without sufficient values.';
+throws_ok { Sakai::Nakamura::User->run( $nakamura, $user_config ) } qr/No profile field to update specified!/, 'Check user_run function croaks for profile_update without sufficient values.';

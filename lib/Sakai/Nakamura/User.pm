@@ -99,7 +99,7 @@ sub profile_update {
 
 #{{{sub run
 sub run {
-    my ( $nakamura, $config ) = @_;
+    my ( $user, $nakamura, $config ) = @_;
     if ( !defined $config ) {
         croak 'No user config supplied!';
     }
@@ -137,7 +137,7 @@ sub run {
         Apache::Sling::Print::print_result($user);
     }
     else {
-        $success = Apache::Sling::User::run( $nakamura, $config );
+        $success = $user->SUPER::run( $nakamura, $config );
     }
     return $success;
 }

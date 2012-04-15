@@ -52,5 +52,5 @@ throws_ok { $world->add_from_file(\$file,0,1) } qr/Unsupported column heading "b
 
 ok( my $world_config = Sakai::Nakamura::World::config($nakamura), 'check world config function' );
 ok( defined $world_config );
-throws_ok { Sakai::Nakamura::World::run( $nakamura ) } qr/No world config supplied!/, 'Check run function croaks without config';
-ok( Sakai::Nakamura::World::run( $nakamura, $world_config ) );
+throws_ok { Sakai::Nakamura::World->run( $nakamura ) } qr/No world config supplied!/, 'Check run function croaks without config';
+ok( Sakai::Nakamura::World->run( $nakamura, $world_config ) );
