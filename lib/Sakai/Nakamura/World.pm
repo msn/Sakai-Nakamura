@@ -6,6 +6,7 @@ use 5.008008;
 use strict;
 use warnings;
 use Carp;
+use Getopt::Long qw(:config bundling);
 use Text::CSV;
 use Sakai::Nakamura;
 use Sakai::Nakamura::WorldUtil;
@@ -51,11 +52,17 @@ sub set_results {
 
 #{{{sub add
 sub add {
-    my ( $world, $id, $title, $description, $tags, $visibility, $joinability, $world_template ) = @_;
+    my ( $world, $id, $title, $description, $tags, $visibility, $joinability,
+        $world_template )
+      = @_;
     my $res = Apache::Sling::Request::request(
         \$world,
         Sakai::Nakamura::WorldUtil::add_setup(
-            $world->{'BaseURL'}, $id, ${$world->{'Authn'}}->{'Username'}, $title, $description, $tags, $visibility, $joinability, $world_template
+            $world->{'BaseURL'},                  $id,
+            ${ $world->{'Authn'} }->{'Username'}, $title,
+            $description,                         $tags,
+            $visibility,                          $joinability,
+            $world_template
         )
     );
     my $success = Sakai::Nakamura::WorldUtil::add_eval($res);
@@ -70,13 +77,14 @@ sub add {
 #{{{sub add_from_file
 sub add_from_file {
     my ( $world, $file, $fork_id, $number_of_forks ) = @_;
-    $fork_id = defined $fork_id ? $fork_id : 0;
+    $fork_id         = defined $fork_id         ? $fork_id         : 0;
     $number_of_forks = defined $number_of_forks ? $number_of_forks : 1;
     my $csv               = Text::CSV->new();
     my $count             = 0;
     my $number_of_columns = 0;
     my @column_headings;
     if ( defined $file && open my ($input), '<', $file ) {
+
         while (<$input>) {
             if ( $count++ == 0 ) {
 
@@ -107,38 +115,52 @@ sub add_from_file {
                         croak
 "Found \"$columns_size\" columns. There should have been \"$number_of_columns\".\nRow contents was: $_";
                     }
-                    my $id       = $columns[0];
+                    my $id = $columns[0];
                     my $title;
                     my $description;
                     my $tags;
                     my $visibility;
                     my $joinability;
                     my $world_template;
+
                     for ( my $i = 1 ; $i < $number_of_columns ; $i++ ) {
                         my $heading = $column_headings[$i];
                         if ( $heading =~ /^[Tt][Ii][Tt][Ll][Ee]$/msx ) {
                             $title = $columns[$i];
                         }
-                        elsif ( $heading =~ /^[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn]$/msx ) {
+                        elsif ( $heading =~
+                            /^[Dd][Ee][Ss][Cc][Rr][Ii][Pp][Tt][Ii][Oo][Nn]$/msx
+                          )
+                        {
                             $description = $columns[$i];
                         }
                         elsif ( $heading =~ /^[Tt][Aa][Gg][Ss]$/msx ) {
                             $tags = $columns[$i];
                         }
-                        elsif ( $heading =~ /^[Vv][Ii][Ss][Ii][Bb][Ii][Ll][Ii][Tt][Yy]$/msx ) {
+                        elsif ( $heading =~
+                            /^[Vv][Ii][Ss][Ii][Bb][Ii][Ll][Ii][Tt][Yy]$/msx )
+                        {
                             $visibility = $columns[$i];
                         }
-                        elsif ( $heading =~ /^[Jj][Oo][Ii][Nn][Aa][Bb][Ii][Ll][Ii][Tt][Yy]$/msx ) {
+                        elsif ( $heading =~
+                            /^[Jj][Oo][Ii][Nn][Aa][Bb][Ii][Ll][Ii][Tt][Yy]$/msx
+                          )
+                        {
                             $joinability = $columns[$i];
                         }
-                        elsif ( $heading =~ /^[Ww][Oo][Rr][Ll][Dd][Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]$/msx ) {
+                        elsif ( $heading =~
+/^[Ww][Oo][Rr][Ll][Dd][Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]$/msx
+                          )
+                        {
                             $world_template = $columns[$i];
                         }
                         else {
-                           croak "Unsupported column heading \"$heading\" - please use: \"id\", \"title\", \"description\", \"tags\", \"visibility\", \"joinability\", \"worldtemplate\"";
+                            croak
+"Unsupported column heading \"$heading\" - please use: \"id\", \"title\", \"description\", \"tags\", \"visibility\", \"joinability\", \"worldtemplate\"";
                         }
                     }
-                    $world->add( $id, $title, $description, $tags, $visibility, $joinability, $world_template );
+                    $world->add( $id, $title, $description, $tags, $visibility,
+                        $joinability, $world_template );
                     Apache::Sling::Print::print_result($world);
                 }
                 else {
@@ -152,6 +174,40 @@ sub add_from_file {
     else {
         croak 'Problem adding from file!';
     }
+    return 1;
+}
+
+#}}}
+
+#{{{sub command_line
+sub command_line {
+    my ( $world, @ARGV ) = @_;
+
+    # options parsing
+    my $nakamura = Sakai::Nakamura->new;
+    my $config   = config($nakamura);
+
+    GetOptions(
+        $config,              'auth=s',
+        'help|?',             'log|L=s',
+        'man|M',              'pass|p=s',
+        'threads|t=s',        'url|U=s',
+        'user|u=s',           'verbose|v+',
+        'add|a',              'additions|A=s',
+        'copy|c',             'delete|d',
+        'exists|e',           'filename|n=s',
+        'local|l=s',          'move|m',
+        'property|P=s',       'remote|r=s',
+        'remote-source|S=s',  'replace|R',
+        'view|V',             'view-copyright=s',
+        'view-description=s', 'view-tags=s',
+        'view-title=s',       'view-visibility=s'
+    ) or $world->help();
+
+    if ( $nakamura->{'Help'} ) { $world->help(); }
+    if ( $nakamura->{'Man'} )  { $world->man(); }
+
+    $world->run( $nakamura, $config );
     return 1;
 }
 
@@ -195,9 +251,71 @@ sub config {
 
 #}}}
 
+#{{{ sub help
+sub help {
+
+    print <<"EOF";
+Usage: perl $0 [-OPTIONS [-MORE_OPTIONS]] [--] [PROGRAM_ARG1 ...]
+The following options are accepted:
+
+ --add or -a (worldid)               - add specified world.
+ --additions or -A (file)            - file containing list of users to be added.
+ --auth (type)                       - Specify auth type. If ommitted, default is used.
+ --description or -d                 - description of world
+ --help or -?                        - view the script synopsis and options.
+ --joinability or -j (joinability)   - Joinability of world.
+ --log or -L (log)                   - Log script output to specified log file.
+ --man or -M                         - view the full script documentation.
+ --pass or -p (password)             - Password of user performing actions.
+ --threads or -t (threads)           - Used with -A, defines number of parallel
+                                       processes to have running through file.
+ --tags or -T (tags)                 - tags for world
+ --title or -t (title)               - title for world
+ --url or -U (URL)                   - URL for system being tested against.
+ --user or -u (username)             - Name of user to perform any actions as.
+ --verbose or -v or -vv or -vvv      - Increase verbosity of output.
+ --visibility or -V (visibility)     - Visibility of world.
+ --worldTemplate or -w               - World template to use.
+
+Options may be merged together. -- stops processing of options.
+Space is not required between options and their arguments.
+For full details run: perl $0 --man
+EOF
+
+    return 1;
+}
+
+#}}}
+
+#{{{ sub man
+sub man {
+    my ($world) = @_;
+
+    print <<'EOF';
+world perl script. Provides a means of managing worlds in nakamura from the command
+line. The script also acts as a reference implementation for the World perl
+library.
+
+EOF
+
+    $world->help();
+
+    print <<"EOF";
+Example Usage
+
+* TODO: add examples
+
+ perl $0 -U http://localhost:8080 -u admin -p admin
+EOF
+
+    return 1;
+}
+
+#}}}
+
 #{{{sub run
 sub run {
-    my ( $nakamura, $config ) = @_;
+    my ( $world, $nakamura, $config ) = @_;
     if ( !defined $config ) {
         croak 'No world config supplied!';
     }
@@ -220,7 +338,7 @@ sub run {
             elsif ( $pid == 0 ) {                # child
                     # Create a new separate user agent per fork in order to
                     # ensure cookie stores are separate, then log the user in:
-                $authn->{'LWP'} = $authn->user_agent($nakamura->{'Referer'});
+                $authn->{'LWP'} = $authn->user_agent( $nakamura->{'Referer'} );
                 $authn->login_user();
                 my $user =
                   new Sakai::Nakamura::World( \$authn, $nakamura->{'Verbose'},
@@ -237,9 +355,9 @@ sub run {
     }
     else {
         $authn->login_user();
-        my $world = new Sakai::Nakamura::World( \$authn, $nakamura->{'Verbose'},
-            $nakamura->{'Log'} );
         if ( defined ${ $config->{'add'} } ) {
+            $world = new Sakai::Nakamura::World( \$authn, $nakamura->{'Verbose'},
+                $nakamura->{'Log'} );
             $success = $world->add(
                 ${ $config->{'add'} },
                 ${ $config->{'title'} },

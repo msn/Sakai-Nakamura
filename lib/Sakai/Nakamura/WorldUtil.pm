@@ -20,20 +20,47 @@ our $VERSION = '0.11';
 # TODO: Support multiple tags properly
 
 sub add_setup {
-    my ( $base_url, $id, $username, $title, $description, $tags, $visibility, $joinability, $worldTemplate ) = @_;
+    my (
+        $base_url,   $id,          $username,
+        $title,      $description, $tags,
+        $visibility, $joinability, $worldTemplate
+    ) = @_;
     if ( !defined $base_url ) { croak 'No base url defined to add against!'; }
-    if ( !defined $id ) { croak 'No id defined to add!'; }
-    if ( !defined $title ) { $title = $id; }
+    if ( !defined $id )       { croak 'No id defined to add!'; }
+    if ( !defined $title )    { $title = $id; }
     if ( !defined $description ) { $description = $id; }
-    if ( !defined $tags ) { $tags = $id; }
-    if ( !defined $visibility ) { $visibility = 'public'; }
+    if ( !defined $tags )        { $tags        = $id; }
+    if ( !defined $visibility )  { $visibility  = 'public'; }
     if ( !defined $joinability ) { $joinability = 'yes'; }
-    if ( !defined $worldTemplate ) { $worldTemplate = '/var/templates/worlds/group/simple-group'; }
+
+    if ( !defined $worldTemplate ) {
+        $worldTemplate = '/var/templates/worlds/group/simple-group';
+    }
     if ( !defined $username ) { croak 'No user id defined to add!'; }
     my $post_variables =
-      "\$post_variables = ['data','{\"id\":\"" . $id . "\",\"title\":\"" . $title . "\",\"tags\":[\"" . $tags . "\"],\"description\":\"" . $description . "\",\"visibility\":\"" . $visibility . "\",\"joinability\":\"" . $joinability . "\",\"worldTemplate\":\"" . $worldTemplate . "\",\"message\":{\"body\":\"Hi \${firstName}\\n\\n \${creatorName} has added you as a \${role} to the group \\\"\${groupName}\\\"\\n\\n You can find it here \${link}\",\"subject\":\"\${creatorName} has added you as a \${role} to the group \\\"\${groupName}\\\"\",\"creatorName\":\"\",\"groupName\":\"" . $title . "\",\"system\":\"Sakai\",\"link\":\"" . $base_url . "/~" . $id . "\",\"toSend\":[]},\"usersToAdd\":[{\"userid\":\"" . $username . "\",\"role\":\"manager\"}]}']";
-    return
-"post $base_url/system/world/create $post_variables";
+        "\$post_variables = ['data','{\"id\":\"" 
+      . $id
+      . "\",\"title\":\""
+      . $title
+      . "\",\"tags\":[\""
+      . $tags
+      . "\"],\"description\":\""
+      . $description
+      . "\",\"visibility\":\""
+      . $visibility
+      . "\",\"joinability\":\""
+      . $joinability
+      . "\",\"worldTemplate\":\""
+      . $worldTemplate
+      . "\",\"message\":{\"body\":\"Hi \${firstName}\\n\\n \${creatorName} has added you as a \${role} to the group \\\"\${groupName}\\\"\\n\\n You can find it here \${link}\",\"subject\":\"\${creatorName} has added you as a \${role} to the group \\\"\${groupName}\\\"\",\"creatorName\":\"\",\"groupName\":\""
+      . $title
+      . "\",\"system\":\"Sakai\",\"link\":\""
+      . $base_url . "/~"
+      . $id
+      . "\",\"toSend\":[]},\"usersToAdd\":[{\"userid\":\""
+      . $username
+      . "\",\"role\":\"manager\"}]}']";
+    return "post $base_url/system/world/create $post_variables";
 }
 
 #}}}

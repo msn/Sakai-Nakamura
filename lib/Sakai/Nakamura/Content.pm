@@ -29,6 +29,7 @@ sub new {
 
     # Add a class variable to track the last content path seen:
     $content->{'Path'} = q{};
+
     # Add a class variable to track the last comment made:
     $content->{'Comment'} = q{};
     bless $content, $class;
@@ -39,32 +40,33 @@ sub new {
 
 #{{{sub command_line
 sub command_line {
-  my @ARGV = @_;
-  # options parsing
-  my $nakamura = Sakai::Nakamura->new;
-  my $config   = config($nakamura);
+    my ( $content, @ARGV ) = @_;
 
-  GetOptions(
-    $config,              'auth=s',
-    'help|?',             'log|L=s',
-    'man|M',              'pass|p=s',
-    'threads|t=s',        'url|U=s',
-    'user|u=s',           'verbose|v+',
-    'add|a',              'additions|A=s',
-    'copy|c',             'delete|d',
-    'exists|e',           'filename|n=s',
-    'local|l=s',          'move|m',
-    'property|P=s',       'remote|r=s',
-    'remote-source|S=s',  'replace|R',
-    'view|V',             'view-copyright=s',
-    'view-description=s', 'view-tags=s',
-    'view-title=s',       'view-visibility=s'
-  ) or help();
+    # options parsing
+    my $nakamura = Sakai::Nakamura->new;
+    my $config   = config($nakamura);
 
-  if ( $nakamura->{'Help'} ) { help(); }
-  if ( $nakamura->{'Man'} )  { pod2usage( -exitstatus => 0, -verbose => 2 ); }
+    GetOptions(
+        $config,              'auth=s',
+        'help|?',             'log|L=s',
+        'man|M',              'pass|p=s',
+        'threads|t=s',        'url|U=s',
+        'user|u=s',           'verbose|v+',
+        'add|a',              'additions|A=s',
+        'copy|c',             'delete|d',
+        'exists|e',           'filename|n=s',
+        'local|l=s',          'move|m',
+        'property|P=s',       'remote|r=s',
+        'remote-source|S=s',  'replace|R',
+        'view|V',             'view-copyright=s',
+        'view-description=s', 'view-tags=s',
+        'view-title=s',       'view-visibility=s'
+    ) or $content->help();
 
-  run($nakamura,$config);
+    if ( $nakamura->{'Help'} ) { $content->help(); }
+    if ( $nakamura->{'Man'} )  { $content->man(); }
+
+    $content->run( $nakamura, $config );
     return 1;
 }
 
@@ -78,11 +80,10 @@ sub comment_add {
       ? Apache::Sling::URL::strip_leading_slash($remote_dest)
       : $content->{'Path'};
 
-    my $res      = Apache::Sling::Request::request(
+    my $res = Apache::Sling::Request::request(
         \$content,
         Sakai::Nakamura::ContentUtil::comment_add_setup(
-            $content->{'BaseURL'},    $remote_dest,
-            $comment
+            $content->{'BaseURL'}, $remote_dest, $comment
         )
     );
     my $success = Sakai::Nakamura::ContentUtil::comment_add_eval($res);
@@ -120,91 +121,52 @@ sub config {
 #{{{ sub help
 sub help {
 
-  print "Usage: perl $0 [-OPTIONS [-MORE_OPTIONS]] [--] [PROGRAM_ARG1 ...]\n";
-  print "The following options are accepted:\n";
+    print <<"EOF";
+Usage: perl $0 [-OPTIONS [-MORE_OPTIONS]] [--] [PROGRAM_ARG1 ...]
+The following options are accepted:
 
-  print " --additions or -A (file)          - File containing list of content to be uploaded.\n";
-  print " --add or -a                       - Add content.\n";
-  print " --auth (type)                     - Specify auth type. If ommitted, default is used.\n";
-  print " --copy or -c                      - Copy content.\n";
-  print " --delete or -d                    - Delete content.\n";
-  print " --filename or -n (filename)       - Specify file name to use for content upload.\n";
-  print " --help or -?                      - view the script synopsis and options.\n";
-  print " --local or -l (localPath)         - Local path to content to upload.\n";
-  print " --log or -L (log)                 - Log script output to specified log file.\n";
-  print " --man or -M                       - view the full script documentation.\n";
-  print " --move or -m                      - Move content.\n";
-  print " --pass or -p (password)           - Password of user performing content manipulations.\n";
-  print " --property or -P (property)       - Specify property to set on node.\n";
-  print " --remote or -r (remoteNode)       - specify remote destination under JCR root to act on.\n";
-  print " --remote-source or -S (remoteSrc) - specify remote source node under JCR root to act on.\n";
-  print " --replace or -R                   - when copying or moving, overwrite remote destination if it exists.\n";
-  print " --threads or -t (threads)         - Used with -A, defines number of parallel\n";
-  print "                                     processes to have running through file.\n";
-  print " --url or -U (URL)                 - URL for system being tested against.\n";
-  print " --user or -u (username)           - Name of user to perform content manipulations as.\n";
-  print " --verbose or -v or -vv or -vvv    - Increase verbosity of output.\n";
-  print " --view or -V (actOnContent)       - view details for specified content in json format.\n";
-  print " --view-copyright (remoteNode)     - view copyright for specified remote content.\n";
-  print " --view-description (remoteNode)   - view description for specified remote content.\n";
-  print " --view-tags (remoteNode)          - view tags for specified remote content.\n";
-  print " --view-title (remoteNode)         - view title for specified remote content.\n";
-  print " --view-visibility (remoteNode)    - view visibility setting for specified remote content.\n\n";
+ --additions or -A (file)          - File containing list of content to be uploaded.
+ --add or -a                       - Add content.
+ --auth (type)                     - Specify auth type. If ommitted, default is used.
+ --copy or -c                      - Copy content.
+ --delete or -d                    - Delete content.
+ --filename or -n (filename)       - Specify file name to use for content upload.
+ --help or -?                      - view the script synopsis and options.
+ --local or -l (localPath)         - Local path to content to upload.
+ --log or -L (log)                 - Log script output to specified log file.
+ --man or -M                       - view the full script documentation.
+ --move or -m                      - Move content.
+ --pass or -p (password)           - Password of user performing content manipulations.
+ --property or -P (property)       - Specify property to set on node.
+ --remote or -r (remoteNode)       - specify remote destination under JCR root to act on.
+ --remote-source or -S (remoteSrc) - specify remote source node under JCR root to act on.
+ --replace or -R                   - when copying or moving, overwrite remote destination if it exists.
+ --threads or -t (threads)         - Used with -A, defines number of parallel
+                                     processes to have running through file.
+ --url or -U (URL)                 - URL for system being tested against.
+ --user or -u (username)           - Name of user to perform content manipulations as.
+ --verbose or -v or -vv or -vvv    - Increase verbosity of output.
+ --view or -V (actOnContent)       - view details for specified content in json format.
+ --view-copyright (remoteNode)     - view copyright for specified remote content.
+ --view-description (remoteNode)   - view description for specified remote content.
+ --view-tags (remoteNode)          - view tags for specified remote content.
+ --view-title (remoteNode)         - view title for specified remote content.
+ --view-visibility (remoteNode)    - view visibility setting for specified remote content.
 
-  print "Options may be merged together. -- stops processing of options.\n";
-  print "Space is not required between options and their arguments.\n";
-  print "For full details run: perl $0 --man\n";
+Options may be merged together. -- stops processing of options.
+Space is not required between options and their arguments.
+For full details run: perl $0 --man
+EOF
 
-#content perl script. Provides a means of uploading content into sling from the
-#command line. The script also acts as a reference implementation for the
-#Content perl library.
-
-=head1 Example Usage
-
-=over
-
-=item Authenticate and add a node at /test:
-
- perl content.pl -U http://localhost:8080 -a -r /test -u admin -p admin
-
-=item Authenticate and add a node at /test with property p1 set to v1:
-
- perl content.pl -U http://localhost:8080 -a -r /test -P p1=v1 -u admin -p admin
-
-=item Authenticate and add a node at /test with property p1 set to v1, and p2 set to v2:
-
- perl content.pl -U http://localhost:8080 -a -r /test -P p1=v1 -P p2=v2 -u admin -p admin
-
-=item View json for node at /test:
-
- perl content.pl -U http://localhost:8080 -V -r /test
-
-=item Check whether node at /test exists:
-
- perl content.pl -U http://localhost:8080 -V -r /test
-
-=item Authenticate and copy content at /test to /test2
-
- perl content.pl -U http://localhost:8080 -c -S /test -r /test2 -u admin -p admin
-
-=item Authenticate and move content at /test to /test2, replacing test2 if it already exists
-
- perl content.pl -U http://localhost:8080 -m -S /test -r /test2 -R -u admin -p admin
-
-=item Authenticate and delete content at /test
-
- perl content.pl -U http://localhost:8080 -d -r /test -u admin -p admin
-
-=back
-
-=cut
+    return 1;
 
 }
+
 #}}}
 
 #{{{sub run
 sub run {
-    my ( $nakamura, $config ) = @_;
+    my ( $content, $nakamura, $config ) = @_;
     if ( !defined $config ) {
         croak 'No content config supplied!';
     }
@@ -231,7 +193,7 @@ sub run {
             elsif ( $pid == 0 ) {                # child
                     # Create a new separate user agent per fork in order to
                     # ensure cookie stores are separate, then log the user in:
-                $authn->{'LWP'} = $authn->user_agent($nakamura->{'Referer'});
+                $authn->{'LWP'} = $authn->user_agent( $nakamura->{'Referer'} );
                 $authn->login_user();
                 my $content =
                   new Sakai::Nakamura::Content( \$authn, $nakamura->{'Verbose'},
@@ -247,41 +209,59 @@ sub run {
         foreach (@childs) { waitpid $_, 0; }
     }
     else {
-        my $content =
-          new Sakai::Nakamura::Content( \$authn, $nakamura->{'Verbose'},
-            $nakamura->{'Log'} );
         if ( defined ${ $config->{'local'} } ) {
             $authn->login_user();
+            $content =
+              new Sakai::Nakamura::Content( \$authn, $nakamura->{'Verbose'},
+                $nakamura->{'Log'} );
             $success = $content->upload_file( ${ $config->{'local'} } );
             Apache::Sling::Print::print_result($content);
         }
         elsif ( defined ${ $config->{'view-copyright'} } ) {
             $authn->login_user();
-            $success = $content->view_copyright( ${ $config->{'view-copyright'} } );
+            $content =
+              new Sakai::Nakamura::Content( \$authn, $nakamura->{'Verbose'},
+                $nakamura->{'Log'} );
+            $success =
+              $content->view_copyright( ${ $config->{'view-copyright'} } );
             Apache::Sling::Print::print_result($content);
         }
         elsif ( defined ${ $config->{'view-description'} } ) {
             $authn->login_user();
-            $success = $content->view_description( ${ $config->{'view-description'} } );
+            $content =
+              new Sakai::Nakamura::Content( \$authn, $nakamura->{'Verbose'},
+                $nakamura->{'Log'} );
+            $success =
+              $content->view_description( ${ $config->{'view-description'} } );
             Apache::Sling::Print::print_result($content);
         }
         elsif ( defined ${ $config->{'view-tags'} } ) {
             $authn->login_user();
+            $content =
+              new Sakai::Nakamura::Content( \$authn, $nakamura->{'Verbose'},
+                $nakamura->{'Log'} );
             $success = $content->view_tags( ${ $config->{'view-tags'} } );
             Apache::Sling::Print::print_result($content);
         }
         elsif ( defined ${ $config->{'view-title'} } ) {
             $authn->login_user();
+            $content =
+              new Sakai::Nakamura::Content( \$authn, $nakamura->{'Verbose'},
+                $nakamura->{'Log'} );
             $success = $content->view_title( ${ $config->{'view-title'} } );
             Apache::Sling::Print::print_result($content);
         }
         elsif ( defined ${ $config->{'view-visibility'} } ) {
             $authn->login_user();
-            $success = $content->view_visibility( ${ $config->{'view-visibility'} } );
+            $content =
+              new Sakai::Nakamura::Content( \$authn, $nakamura->{'Verbose'},
+                $nakamura->{'Log'} );
+            $success =
+              $content->view_visibility( ${ $config->{'view-visibility'} } );
             Apache::Sling::Print::print_result($content);
         }
         else {
-            $success = Apache::Sling::Content::run($nakamura,$config);
+            $success = $content->SUPER::run( $nakamura, $config );
         }
     }
     return $success;

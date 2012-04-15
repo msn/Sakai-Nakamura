@@ -7,6 +7,8 @@ lib/Sakai/Nakamura/ContentUtil.pm
 lib/Sakai/Nakamura/GroupMember.pm
 lib/Sakai/Nakamura/GroupMemberUtil.pm
 lib/Sakai/Nakamura/Group.pm
+lib/Sakai/Nakamura/GroupRole.pm
+lib/Sakai/Nakamura/JsonQueryServlet.pm
 lib/Sakai/Nakamura/LDAPSynch.pm
 lib/Sakai/Nakamura.pm
 lib/Sakai/Nakamura/User.pm
@@ -21,7 +23,7 @@ README
 scripts/nakamura.pl
 t/External/Sakai-Nakamura-Authn.t
 t/External/Sakai-Nakamura-Content.t
-t/External/Sakai-Nakamura-GroupMember.t
+t/External/Sakai-Nakamura-GroupRole.t
 t/External/Sakai-Nakamura-Group.t
 t/External/Sakai-Nakamura.t
 t/External/Sakai-Nakamura-User.t

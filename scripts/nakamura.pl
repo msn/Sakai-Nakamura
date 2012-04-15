@@ -9,6 +9,7 @@ use Pod::Usage;
 use Sakai::Nakamura::Authz;
 use Sakai::Nakamura::Content;
 use Sakai::Nakamura::GroupMember;
+use Sakai::Nakamura::GroupRole;
 use Sakai::Nakamura::Group;
 use Sakai::Nakamura::JsonQueryServlet;
 use Sakai::Nakamura::LDAPSynch;
@@ -17,7 +18,7 @@ use Sakai::Nakamura::World;
 
 # Fail if args are empty or undefined:
 if ( !defined $ARGV[0] || $ARGV[0] eq q{} ) {
-    croak q{Type '$0 help' for usage.};
+    croak "Type '$0 help' for usage.";
 }
 
 # Give usage info if help or man are requested:
@@ -35,6 +36,7 @@ my %module_lookup = (
     'authz',              'Sakai::Nakamura::Authz',
     'content',            'Sakai::Nakamura::Content',
     'group_member',       'Sakai::Nakamura::GroupMember',
+    'group_role',         'Sakai::Nakamura::GroupRole',
     'group',              'Sakai::Nakamura::Group',
     'json_query_servlet', 'Sakai::Nakamura::JsonQueryServlet',
     'ldap_synch',         'Sakai::Nakamura::LDAPSynch',
@@ -75,10 +77,12 @@ The following options are accepted:
  authz              - run authz related actions
  content            - run content related actions
  group_member       - run group membership related actions
+ group_role         - run group role related actions
  group              - run group related actions
  json_query_servlet - run json query servlet related actions
  ldap_synch         - run ldap synchronization related actions
  user               - run user related actions
+ world              - run world related actions
 
 Options may be merged together. -- stops processing of options.
 Space is not required between options and their arguments.

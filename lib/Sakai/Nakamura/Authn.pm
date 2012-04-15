@@ -20,9 +20,10 @@ our $VERSION = '0.11';
 #{{{sub new
 sub new {
     my ( $class, $nakamura ) = @_;
+
     # Set the Referer to /dev/integrationtests in order to be
     # allowed to post to the Sakai Nakamura instance:
-    ${ $nakamura }->{'Referer'} = '/dev/integrationtests';
+    ${$nakamura}->{'Referer'} = '/dev/integrationtests';
     my $authn = $class->SUPER::new($nakamura);
     ${$nakamura}->{'Authn'} = \$authn;
     bless $authn, $class;

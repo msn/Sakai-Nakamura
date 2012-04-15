@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 40;
+use Test::More tests => 33;
 use Test::Exception;
 
 my $sling_host = 'http://localhost:8080';
@@ -16,7 +16,6 @@ BEGIN { use_ok( 'Sakai::Nakamura' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::Authn' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::User' ); }
 BEGIN { use_ok( 'Sakai::Nakamura::Group' ); }
-BEGIN { use_ok( 'Sakai::Nakamura::GroupMember' ); }
 
 # test user name:
 my $test_user = "user_test_user_$$";
@@ -46,17 +45,12 @@ isa_ok $user, 'Sakai::Nakamura::User', 'user';
 # group object:
 my $group = Sakai::Nakamura::Group->new( \$authn, $verbose, $log );
 isa_ok $group, 'Sakai::Nakamura::Group', 'group';
-# group_member object:
-my $group_member = Sakai::Nakamura::GroupMember->new( \$authn, $verbose, $log );
-isa_ok $group_member, 'Sakai::Nakamura::GroupMember', 'group_member';
 
 # Run tests:
 ok( defined $user,
     "User Test: Sling User Object successfully created." );
 ok( defined $group,
     "User Test: Sling Group Object successfully created." );
-ok( defined $group_member,
-    "User Test: Sling Group Member Object successfully created." );
 
 # add user:
 ok( $user->add( $test_user, $test_pass, \@test_properties ),
@@ -82,20 +76,10 @@ ok( $group->add( $test_group, \@test_properties ),
     "User Test: Group \"$test_group\" added successfully." );
 ok( $group->check_exists( $test_group ),
     "User Test: Group \"$test_group\" exists." );
-# Add member to group:
-ok( $group_member->add( $test_group, $test_user ),
-    "User Test: Member \"$test_user\" added to \"$test_group\"." );
-ok( $group_member->check_exists( $test_group, $test_user ),
-    "User Test: Member \"$test_user\" exists in \"$test_group\"." );
 # Check can still update properties:
 @test_properties = ( "user_test_edit_after_group_join=true" );
 ok( $user->update( $test_user, \@test_properties ),
     "User Test: User \"$test_user\" updated successfully." );
-# Delete test user from group:
-ok( $group_member->delete( $test_group, $test_user ),
-    "User Test: Member \"$test_user\" deleted from \"$test_group\"." );
-ok( ! $group_member->check_exists( $test_group, $test_user ),
-    "User Test: Member \"$test_user\" should no longer exist in \"$test_group\"." );
 # Cleanup Group:
 ok( $group->del( $test_group ),
     "User Test: Group \"$test_group\" deleted successfully." );

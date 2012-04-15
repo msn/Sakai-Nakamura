@@ -8,6 +8,7 @@ use warnings;
 use Carp;
 use base qw(Apache::Sling::User);
 use Sakai::Nakamura;
+use Sakai::Nakamura::Authn;
 use Sakai::Nakamura::UserUtil;
 
 require Exporter;
@@ -136,7 +137,7 @@ sub run {
         Apache::Sling::Print::print_result($user);
     }
     else {
-        $success = Apache::Sling::User::run($nakamura,$config);
+        $success = Apache::Sling::User::run( $nakamura, $config );
     }
     return $success;
 }

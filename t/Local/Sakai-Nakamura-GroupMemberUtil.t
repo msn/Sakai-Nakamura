@@ -17,12 +17,12 @@ my $res = HTTP::Response->new( '200' );
 # Insert your test code below, the Test::More module is use()ed here so read
 # its man page ( perldoc Test::More ) for help writing this test script.
 my @properties = '';
-ok( Sakai::Nakamura::GroupMemberUtil::role_member_add_setup( 'http://localhost:8080', 'group', 'role', 'member' ) eq
-  "post http://localhost:8080/system/userManager/group/group-role.update.json \$post_variables = [':member','member',':viewer','member']", 'Check role_member_add_setup function' );
+ok( Sakai::Nakamura::GroupMemberUtil::add_setup( 'http://localhost:8080', 'group', 'role', 'member' ) eq
+  "post http://localhost:8080/system/userManager/group/group-role.update.json \$post_variables = [':member','member',':viewer','member']", 'Check add_setup function' );
 
-throws_ok { Sakai::Nakamura::GroupMemberUtil::role_member_add_setup() } qr/No base url defined to add against!/, 'Check role_member_add_setup function croaks without base url';
-throws_ok { Sakai::Nakamura::GroupMemberUtil::role_member_add_setup( 'http://localhost:8080' ) } qr/No group name defined to add member to!/, 'Check role_member_add_setup function croaks without group';
-throws_ok { Sakai::Nakamura::GroupMemberUtil::role_member_add_setup( 'http://localhost:8080', 'group' ) } qr/No role defined to add member to!/, 'Check role_member_add_setup function croaks without role';
-throws_ok { Sakai::Nakamura::GroupMemberUtil::role_member_add_setup( 'http://localhost:8080', 'group', 'role' ) } qr/No member name defined to add!/, 'Check role_member_add_setup function croaks without member';
+throws_ok { Sakai::Nakamura::GroupMemberUtil::add_setup() } qr/No base url defined to add against!/, 'Check add_setup function croaks without base url';
+throws_ok { Sakai::Nakamura::GroupMemberUtil::add_setup( 'http://localhost:8080' ) } qr/No group name defined to add member to!/, 'Check add_setup function croaks without group';
+throws_ok { Sakai::Nakamura::GroupMemberUtil::add_setup( 'http://localhost:8080', 'group' ) } qr/No role defined to add member to!/, 'Check add_setup function croaks without role';
+throws_ok { Sakai::Nakamura::GroupMemberUtil::add_setup( 'http://localhost:8080', 'group', 'role' ) } qr/No member name defined to add!/, 'Check add_setup function croaks without member';
 
-ok( Sakai::Nakamura::GroupMemberUtil::role_member_add_eval( \$res ), 'Check role_member_add_eval function' );
+ok( Sakai::Nakamura::GroupMemberUtil::add_eval( \$res ), 'Check add_eval function' );

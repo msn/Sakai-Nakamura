@@ -25,7 +25,8 @@ sub exists_setup {
     if ( !defined $act_on_user ) {
         croak 'No user to check existence of defined!';
     }
-    return "get $base_url/system/userManager/user.exists.html?userid=$act_on_user";
+    return
+      "get $base_url/system/userManager/user.exists.html?userid=$act_on_user";
 }
 
 #}}}
@@ -81,7 +82,8 @@ sub profile_update_setup {
     }
     my $profile_update_json =
       "{\"elements\":{\"$field\":{\"value\":\"$value\"}}}";
-    my $post_variables = "\$post_variables = [':content','$profile_update_json',':contentType','json',':operation','import',':removeTree','true',':replace','true',':replaceProperties','true']";
+    my $post_variables =
+"\$post_variables = [':content','$profile_update_json',':contentType','json',':operation','import',':removeTree','true',':replace','true',':replaceProperties','true']";
     return
 "post $base_url/~$act_on_user/public/authprofile/$profile_section.profile.json $post_variables";
 }

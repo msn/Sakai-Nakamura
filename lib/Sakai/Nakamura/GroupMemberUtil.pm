@@ -15,9 +15,9 @@ our @EXPORT_OK = ();
 
 our $VERSION = '0.11';
 
-#{{{sub role_member_add_setup
+#{{{sub add_setup
 
-sub role_member_add_setup {
+sub add_setup {
     my ( $base_url, $act_on_group, $act_on_role, $add_member ) = @_;
     if ( !defined $base_url ) { croak 'No base url defined to add against!'; }
     if ( !defined $act_on_group ) {
@@ -35,9 +35,9 @@ sub role_member_add_setup {
 
 #}}}
 
-#{{{sub role_member_add_eval
+#{{{sub add_eval
 
-sub role_member_add_eval {
+sub add_eval {
     my ($res) = @_;
     return ( ${$res}->code eq '200' );
 }
@@ -59,12 +59,12 @@ group related actions in the system.
 
 =head1 METHODS
 
-=head2 role_member_add_setup
+=head2 add_setup
 
 Returns a textual representation of the request needed to add a member to a
 role in a group in the system.
 
-=head2 role_member_add_eval
+=head2 add_eval
 
 Check result of adding a member to a role in a group in the system.
 
