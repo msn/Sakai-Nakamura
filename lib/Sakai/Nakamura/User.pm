@@ -6,6 +6,7 @@ use 5.008008;
 use strict;
 use warnings;
 use Carp;
+use Getopt::Long qw(:config bundling);
 use base qw(Apache::Sling::User);
 use Sakai::Nakamura;
 use Sakai::Nakamura::Authn;
@@ -37,21 +38,51 @@ sub check_exists {
 
 #}}}
 
+#{{{ sub command_line
+sub command_line {
+    my ( $class, @ARGV ) = @_;
+    my $nakamura = Sakai::Nakamura->new;
+    my $config = $class->config( $nakamura, @ARGV );
+    my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+    return $class->run( $nakamura, $config );
+}
+
+#}}}
+
 #{{{sub config
 
 sub config {
-    my ($class) = @_;
+    my ($class,$nakamura,@ARGV) = @_;
     my $me;
     my $profile_field;
     my $profile_section;
     my $profile_update;
     my $profile_value;
-    my $user_config = $class->SUPER::config();
+    my $user_config = $class->SUPER::config($nakamura,@ARGV);
     $user_config->{'me'}              = \$me;
     $user_config->{'profile-field'}   = \$profile_field;
     $user_config->{'profile-section'} = \$profile_section;
     $user_config->{'profile-update'}  = \$profile_update;
     $user_config->{'profile-value'}   = \$profile_value;
+
+    GetOptions(
+        $user_config,         'auth=s',
+        'help|?',              'log|L=s',
+        'man|M',               'pass|p=s',
+        'threads|t=s',         'url|U=s',
+        'user|u=s',            'verbose|v+',
+        'add|a=s',             'additions|A=s',
+        'change-password|c=s', 'delete|d=s',
+        'email|E=s',           'first-name|f=s',
+        'exists|e=s',          'last-name|l=s',
+        'new-password|n=s',    'password|w=s',
+        'property|P=s',        'update=s',
+        'view|V=s'
+    ) or $class->help();
+
+    if ( $nakamura->{'Help'} ) { $class->help(); }
+    if ( $nakamura->{'Man'} )  { $class->man(); }
+
     return $user_config;
 }
 

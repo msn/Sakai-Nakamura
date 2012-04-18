@@ -6,8 +6,9 @@ use 5.008008;
 use strict;
 use warnings;
 use Carp;
-
 use base qw(Apache::Sling::Authz);
+use Sakai::Nakamura;
+use Sakai::Nakamura::Authn;
 
 require Exporter;
 
@@ -16,6 +17,17 @@ use base qw(Exporter);
 our @EXPORT_OK = ();
 
 our $VERSION = '0.12';
+
+#{{{ sub command_line
+sub command_line {
+    my ( $class, @ARGV ) = @_;
+    my $nakamura = Sakai::Nakamura->new;
+    my $config = $class->config( $nakamura, @ARGV );
+    my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+    return $class->run( $nakamura, $config );
+}
+
+#}}}
 
 1;
 

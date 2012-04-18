@@ -9,8 +9,9 @@ use Carp;
 use JSON;
 use Getopt::Long qw(:config bundling);
 use Pod::Usage;
-use Sakai::Nakamura::ContentUtil;
 use Sakai::Nakamura;
+use Sakai::Nakamura::Authn;
+use Sakai::Nakamura::ContentUtil;
 
 use base qw(Apache::Sling::Content);
 
@@ -38,36 +39,13 @@ sub new {
 
 #}}}
 
-#{{{sub command_line
+#{{{ sub command_line
 sub command_line {
-    my ( $content, @ARGV ) = @_;
-
-    # options parsing
+    my ( $class, @ARGV ) = @_;
     my $nakamura = Sakai::Nakamura->new;
-    my $config   = config($nakamura);
-
-    GetOptions(
-        $config,              'auth=s',
-        'help|?',             'log|L=s',
-        'man|M',              'pass|p=s',
-        'threads|t=s',        'url|U=s',
-        'user|u=s',           'verbose|v+',
-        'add|a',              'additions|A=s',
-        'copy|c',             'delete|d',
-        'exists|e',           'filename|n=s',
-        'local|l=s',          'move|m',
-        'property|P=s',       'remote|r=s',
-        'remote-source|S=s',  'replace|R',
-        'view|V',             'view-copyright=s',
-        'view-description=s', 'view-tags=s',
-        'view-title=s',       'view-visibility=s'
-    ) or $content->help();
-
-    if ( $nakamura->{'Help'} ) { $content->help(); }
-    if ( $nakamura->{'Man'} )  { $content->man(); }
-
-    $content->run( $nakamura, $config );
-    return 1;
+    my $config = $class->config( $nakamura, @ARGV );
+    my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+    return $class->run( $nakamura, $config );
 }
 
 #}}}
@@ -101,18 +79,39 @@ sub comment_add {
 #{{{sub config
 
 sub config {
-    my ($class) = @_;
+    my ($class, $nakamura, @ARGV) = @_;
     my $view_copyright;
     my $view_description;
     my $view_tags;
     my $view_title;
     my $view_visibility;
-    my $content_config = $class->SUPER::config();
+    my $content_config = $class->SUPER::config($nakamura,@ARGV);
     $content_config->{'view-copyright'}   = \$view_copyright;
     $content_config->{'view-description'} = \$view_description;
     $content_config->{'view-tags'}        = \$view_tags;
     $content_config->{'view-title'}       = \$view_title;
     $content_config->{'view-visibility'}  = \$view_visibility;
+
+    GetOptions(
+        $content_config,              'auth=s',
+        'help|?',             'log|L=s',
+        'man|M',              'pass|p=s',
+        'threads|t=s',        'url|U=s',
+        'user|u=s',           'verbose|v+',
+        'add|a',              'additions|A=s',
+        'copy|c',             'delete|d',
+        'exists|e',           'filename|n=s',
+        'local|l=s',          'move|m',
+        'property|P=s',       'remote|r=s',
+        'remote-source|S=s',  'replace|R',
+        'view|V',             'view-copyright=s',
+        'view-description=s', 'view-tags=s',
+        'view-title=s',       'view-visibility=s'
+    ) or $class->help();
+
+    if ( $nakamura->{'Help'} ) { $class->help(); }
+    if ( $nakamura->{'Man'} )  { $class->man(); }
+
     return $content_config;
 }
 

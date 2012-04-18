@@ -6,7 +6,6 @@ use strict;
 use warnings;
 use Carp;
 use base qw(Apache::Sling);
-use Sakai::Nakamura::Authn;
 require Exporter;
 
 use base qw(Exporter);
@@ -15,6 +14,19 @@ our @EXPORT_OK = ();
 
 our $VERSION = '0.12';
 
+#{{{sub new
+sub new {
+    my ( $class, @args ) = @_;
+    my $nakamura = $class->SUPER::new(@args);
+
+    # Set the referer so that nakamura POST requests will work:
+    $nakamura->{'Referer'} = q{/dev/integrationtests};
+
+    bless $nakamura, $class;
+    return $nakamura;
+}
+
+#}}}
 1;
 __END__
 

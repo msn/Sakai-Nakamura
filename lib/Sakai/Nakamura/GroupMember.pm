@@ -8,6 +8,7 @@ use warnings;
 use Carp;
 use Getopt::Long qw(:config bundling);
 use Sakai::Nakamura;
+use Sakai::Nakamura::Authn;
 use Sakai::Nakamura::GroupMemberUtil;
 
 require Exporter;
@@ -84,33 +85,31 @@ sub check_exists {
 
 #}}}
 
-#{{{sub command_line
+#{{{ sub command_line
 sub command_line {
-    my ( $group_member, @ARGV ) = @_;
-
-    # options parsing
+    my ( $class, @ARGV ) = @_;
     my $nakamura = Sakai::Nakamura->new;
-    my $config   = config($nakamura);
-
-    GetOptions(
-    $config
-    ) or $group_member->help();
-
-    if ( $nakamura->{'Help'} ) { $group_member->help(); }
-    if ( $nakamura->{'Man'} )  { $group_member->man(); }
-
-    $group_member->run( $nakamura, $config );
-    return 1;
+    my $config = $class->config( $nakamura, @ARGV );
+    my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+    return $class->run( $nakamura, $config );
 }
 
 #}}}
 
 #{{{sub config
+# TODO add config options:
 
 sub config {
-    my ($class) = @_;
+    my ($class,$nakamura,@ARGV) = @_;
     my %group_member_config = (
     );
+
+    GetOptions(
+    \%group_member_config 
+    ) or $class->help();
+
+    if ( $nakamura->{'Help'} ) { $class->help(); }
+    if ( $nakamura->{'Man'} )  { $class->man(); }
 
     return \%group_member_config;
 }

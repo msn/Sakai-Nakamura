@@ -9,6 +9,7 @@ use Carp;
 use Getopt::Long qw(:config bundling);
 use Text::CSV;
 use Sakai::Nakamura;
+use Sakai::Nakamura::Authn;
 use Sakai::Nakamura::WorldUtil;
 
 require Exporter;
@@ -187,26 +188,6 @@ sub command_line {
     my $nakamura = Sakai::Nakamura->new;
     my $config   = config($nakamura);
 
-    GetOptions(
-        $config,              'auth=s',
-        'help|?',             'log|L=s',
-        'man|M',              'pass|p=s',
-        'threads|t=s',        'url|U=s',
-        'user|u=s',           'verbose|v+',
-        'add|a',              'additions|A=s',
-        'copy|c',             'delete|d',
-        'exists|e',           'filename|n=s',
-        'local|l=s',          'move|m',
-        'property|P=s',       'remote|r=s',
-        'remote-source|S=s',  'replace|R',
-        'view|V',             'view-copyright=s',
-        'view-description=s', 'view-tags=s',
-        'view-title=s',       'view-visibility=s'
-    ) or $world->help();
-
-    if ( $nakamura->{'Help'} ) { $world->help(); }
-    if ( $nakamura->{'Man'} )  { $world->man(); }
-
     $world->run( $nakamura, $config );
     return 1;
 }
@@ -216,7 +197,7 @@ sub command_line {
 #{{{sub config
 
 sub config {
-    my ($class) = @_;
+    my ($class,$nakamura,@ARGV) = @_;
     my $add;
     my $additions;
     my $id;
@@ -245,6 +226,27 @@ sub config {
         'joinability'    => \$joinability,
         'world_template' => \$world_template
     );
+
+    GetOptions(
+        \%world_config,              'auth=s',
+        'help|?',             'log|L=s',
+        'man|M',              'pass|p=s',
+        'threads|t=s',        'url|U=s',
+        'user|u=s',           'verbose|v+',
+        'add|a',              'additions|A=s',
+        'copy|c',             'delete|d',
+        'exists|e',           'filename|n=s',
+        'local|l=s',          'move|m',
+        'property|P=s',       'remote|r=s',
+        'remote-source|S=s',  'replace|R',
+        'view|V',             'view-copyright=s',
+        'view-description=s', 'view-tags=s',
+        'view-title=s',       'view-visibility=s'
+    ) or $class->help();
+
+    if ( $nakamura->{'Help'} ) { $class->help(); }
+    if ( $nakamura->{'Man'} )  { $class->man(); }
+
 
     return \%world_config;
 }

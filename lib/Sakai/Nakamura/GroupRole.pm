@@ -7,6 +7,8 @@ use strict;
 use warnings;
 use Carp;
 use base qw(Apache::Sling::GroupMember);
+use Sakai::Nakamura;
+use Sakai::Nakamura::Authn;
 
 require Exporter;
 
@@ -46,6 +48,17 @@ For full details run: perl $0 --man
 EOF
 
     return 1;
+}
+
+#}}}
+
+#{{{ sub command_line
+sub command_line {
+    my ( $class, @ARGV ) = @_;
+    my $nakamura = Sakai::Nakamura->new;
+    my $config = $class->config( $nakamura, @ARGV );
+    my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+    return $class->run( $nakamura, $config );
 }
 
 #}}}
