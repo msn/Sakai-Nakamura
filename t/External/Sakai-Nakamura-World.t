@@ -52,7 +52,7 @@ ok( $world->add_from_file(\$upload,0,3), 'Check add_from_file function with thre
   #  "World Test: World \"$test_world\" added successfully." );
 
 
-ok( my $world_config = Sakai::Nakamura::World::config($nakamura), 'check world config function' );
+ok( my $world_config = Sakai::Nakamura::World->config($nakamura), 'check world config function' );
 ok( defined $world_config );
 throws_ok { Sakai::Nakamura::World->run( $nakamura ) } qr/No world config supplied!/, 'Check run function croaks without config';
 ok( Sakai::Nakamura::World->run( $nakamura, $world_config ) );

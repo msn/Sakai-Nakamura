@@ -43,8 +43,8 @@ sub new {
 sub command_line {
     my ( $class, @ARGV ) = @_;
     my $nakamura = Sakai::Nakamura->new;
-    my $config = $class->config( $nakamura, @ARGV );
-    my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+    my $config   = $class->config( $nakamura, @ARGV );
+    my $authn    = new Sakai::Nakamura::Authn( \$nakamura );
     return $class->run( $nakamura, $config );
 }
 
@@ -79,21 +79,11 @@ sub comment_add {
 #{{{sub config
 
 sub config {
-    my ($class, $nakamura, @ARGV) = @_;
-    my $view_copyright;
-    my $view_description;
-    my $view_tags;
-    my $view_title;
-    my $view_visibility;
-    my $content_config = $class->SUPER::config($nakamura,@ARGV);
-    $content_config->{'view-copyright'}   = \$view_copyright;
-    $content_config->{'view-description'} = \$view_description;
-    $content_config->{'view-tags'}        = \$view_tags;
-    $content_config->{'view-title'}       = \$view_title;
-    $content_config->{'view-visibility'}  = \$view_visibility;
+    my ( $class, $nakamura, @ARGV ) = @_;
+    my $content_config = $class->config_hash( $nakamura, @ARGV );
 
     GetOptions(
-        $content_config,              'auth=s',
+        $content_config,      'auth=s',
         'help|?',             'log|L=s',
         'man|M',              'pass|p=s',
         'threads|t=s',        'url|U=s',
@@ -109,8 +99,26 @@ sub config {
         'view-title=s',       'view-visibility=s'
     ) or $class->help();
 
-    if ( $nakamura->{'Help'} ) { $class->help(); }
-    if ( $nakamura->{'Man'} )  { $class->man(); }
+    return $content_config;
+}
+
+#}}}
+
+#{{{sub config_hash
+
+sub config_hash {
+    my ( $class, $nakamura, @ARGV ) = @_;
+    my $view_copyright;
+    my $view_description;
+    my $view_tags;
+    my $view_title;
+    my $view_visibility;
+    my $content_config = $class->SUPER::config_hash( $nakamura, @ARGV );
+    $content_config->{'view-copyright'}   = \$view_copyright;
+    $content_config->{'view-description'} = \$view_description;
+    $content_config->{'view-tags'}        = \$view_tags;
+    $content_config->{'view-title'}       = \$view_title;
+    $content_config->{'view-visibility'}  = \$view_visibility;
 
     return $content_config;
 }
@@ -181,7 +189,9 @@ sub run {
 
     my $success = 1;
 
-    if ( defined ${ $config->{'additions'} } ) {
+    if    ( $nakamura->{'Help'} ) { $content->help(); }
+    elsif ( $nakamura->{'Man'} )  { $content->man(); }
+    elsif ( defined ${ $config->{'additions'} } ) {
         my $message =
           "Adding content from file \"" . ${ $config->{'additions'} } . "\":\n";
         Apache::Sling::Print::print_with_lock( "$message", $nakamura->{'Log'} );

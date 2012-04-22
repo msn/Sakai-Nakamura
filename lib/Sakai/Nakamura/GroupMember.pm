@@ -71,6 +71,7 @@ sub add {
 
 #{{{sub add_from_file
 sub add_from_file {
+
     # TODO implement
     return 1;
 }
@@ -79,6 +80,7 @@ sub add_from_file {
 
 #{{{sub check_exists
 sub check_exists {
+
     # TODO implement
     return 1;
 }
@@ -89,8 +91,8 @@ sub check_exists {
 sub command_line {
     my ( $class, @ARGV ) = @_;
     my $nakamura = Sakai::Nakamura->new;
-    my $config = $class->config( $nakamura, @ARGV );
-    my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+    my $config   = $class->config( $nakamura, @ARGV );
+    my $authn    = new Sakai::Nakamura::Authn( \$nakamura );
     return $class->run( $nakamura, $config );
 }
 
@@ -100,16 +102,22 @@ sub command_line {
 # TODO add config options:
 
 sub config {
-    my ($class,$nakamura,@ARGV) = @_;
-    my %group_member_config = (
-    );
+    my ( $class, $nakamura, @ARGV ) = @_;
+    my $group_member_config = $class->config_hash( $nakamura, @ARGV );
 
-    GetOptions(
-    \%group_member_config 
-    ) or $class->help();
+    GetOptions( $group_member_config ) or $class->help();
 
-    if ( $nakamura->{'Help'} ) { $class->help(); }
-    if ( $nakamura->{'Man'} )  { $class->man(); }
+    return $group_member_config;
+}
+
+#}}}
+
+#{{{sub config_hash
+# TODO add config options:
+
+sub config_hash {
+    my ( $class, $nakamura, @ARGV ) = @_;
+    my %group_member_config = ();
 
     return \%group_member_config;
 }
@@ -118,6 +126,7 @@ sub config {
 
 #{{{sub del
 sub del {
+
     # TODO implement
     return 1;
 }
@@ -126,7 +135,8 @@ sub del {
 
 #{{{ sub help
 sub help {
-# TODO: implement
+
+    # TODO: implement
 
     print <<"EOF";
 Usage: perl $0 [-OPTIONS [-MORE_OPTIONS]] [--] [PROGRAM_ARG1 ...]
@@ -144,7 +154,8 @@ EOF
 
 #{{{ sub man
 sub man {
-# TODO: implement
+
+    # TODO: implement
     my ($group_member) = @_;
 
     print <<'EOF';
@@ -183,6 +194,9 @@ sub run {
 
     my $success = 1;
 
+    if    ( $nakamura->{'Help'} ) { $group_member->help(); }
+    elsif ( $nakamura->{'Man'} )  { $group_member->man(); }
+
     # TODO: implement
 
     return $success;
@@ -192,6 +206,7 @@ sub run {
 
 #{{{sub view
 sub view {
+
     # TODO implement
     return 1;
 }

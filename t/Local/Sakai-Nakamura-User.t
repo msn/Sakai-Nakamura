@@ -36,7 +36,7 @@ ok( $user->{ 'Message' } eq 'Test Message', 'Message now set' );
 ok( ! defined $user->{ 'Response' },          'Check response no longer defined' );
 throws_ok { $user->profile_update() } qr/No profile field to update specified!/, 'Check profile_update function croaks without field specified';
 
-ok( my $user_config = Sakai::Nakamura::User::config($nakamura), 'check user config function' );
+ok( my $user_config = Sakai::Nakamura::User->config($nakamura), 'check user config function' );
 ok( defined $user_config );
 throws_ok { Sakai::Nakamura::User->run( $nakamura ) } qr/No user config supplied!/, 'Check run function croaks without config';
 ok( Sakai::Nakamura::User->run( $nakamura, $user_config ) );

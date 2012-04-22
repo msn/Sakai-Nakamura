@@ -66,6 +66,8 @@ sub add_setup {
 #}}}
 
 #{{{sub add_eval
+# TODO: check JSON that is returned for success, as a 200 status code is
+# returned even if the world is not successfully added!
 
 sub add_eval {
     my ($res) = @_;

@@ -56,8 +56,8 @@ EOF
 sub command_line {
     my ( $class, @ARGV ) = @_;
     my $nakamura = Sakai::Nakamura->new;
-    my $config = $class->config( $nakamura, @ARGV );
-    my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+    my $config   = $class->config( $nakamura, @ARGV );
+    my $authn    = new Sakai::Nakamura::Authn( \$nakamura );
     return $class->run( $nakamura, $config );
 }
 

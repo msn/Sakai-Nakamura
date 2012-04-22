@@ -74,7 +74,7 @@ unlink($tmp_content_name);
 unlink($tmp_content2_name);
 throws_ok{ $content->upload_from_file($tmp_content_name,0,1)} qr{Problem opening file: '$tmp_content_name'}, 'Check upload_file function croaks with a missing file';
 
-ok( my $content_config = Sakai::Nakamura::Content::config($nakamura), 'check content config function' );
+ok( my $content_config = Sakai::Nakamura::Content->config($nakamura), 'check content config function' );
 ok( defined $content_config );
 throws_ok { Sakai::Nakamura::Content->run( $nakamura ) } qr/No content config supplied!/, 'Check run function croaks without config';
 ok( Sakai::Nakamura::Content->run( $nakamura, $content_config ) );

@@ -42,8 +42,8 @@ sub check_exists {
 sub command_line {
     my ( $class, @ARGV ) = @_;
     my $nakamura = Sakai::Nakamura->new;
-    my $config = $class->config( $nakamura, @ARGV );
-    my $authn = new Sakai::Nakamura::Authn( \$nakamura );
+    my $config   = $class->config( $nakamura, @ARGV );
+    my $authn    = new Sakai::Nakamura::Authn( \$nakamura );
     return $class->run( $nakamura, $config );
 }
 
@@ -52,21 +52,11 @@ sub command_line {
 #{{{sub config
 
 sub config {
-    my ($class,$nakamura,@ARGV) = @_;
-    my $me;
-    my $profile_field;
-    my $profile_section;
-    my $profile_update;
-    my $profile_value;
-    my $user_config = $class->SUPER::config($nakamura,@ARGV);
-    $user_config->{'me'}              = \$me;
-    $user_config->{'profile-field'}   = \$profile_field;
-    $user_config->{'profile-section'} = \$profile_section;
-    $user_config->{'profile-update'}  = \$profile_update;
-    $user_config->{'profile-value'}   = \$profile_value;
+    my ( $class, $nakamura, @ARGV ) = @_;
+    my $user_config = $class->config_hash( $nakamura, @ARGV );
 
     GetOptions(
-        $user_config,         'auth=s',
+        $user_config,          'auth=s',
         'help|?',              'log|L=s',
         'man|M',               'pass|p=s',
         'threads|t=s',         'url|U=s',
@@ -80,8 +70,26 @@ sub config {
         'view|V=s'
     ) or $class->help();
 
-    if ( $nakamura->{'Help'} ) { $class->help(); }
-    if ( $nakamura->{'Man'} )  { $class->man(); }
+    return $user_config;
+}
+
+#}}}
+
+#{{{sub config_hash
+
+sub config_hash {
+    my ( $class, $nakamura, @ARGV ) = @_;
+    my $me;
+    my $profile_field;
+    my $profile_section;
+    my $profile_update;
+    my $profile_value;
+    my $user_config = $class->SUPER::config_hash( $nakamura, @ARGV );
+    $user_config->{'me'}              = \$me;
+    $user_config->{'profile-field'}   = \$profile_field;
+    $user_config->{'profile-section'} = \$profile_section;
+    $user_config->{'profile-update'}  = \$profile_update;
+    $user_config->{'profile-value'}   = \$profile_value;
 
     return $user_config;
 }
@@ -141,7 +149,9 @@ sub run {
 
     my $success = 1;
 
-    if ( defined ${ $config->{'exists'} } ) {
+    if    ( $nakamura->{'Help'} ) { $user->help(); }
+    elsif ( $nakamura->{'Man'} )  { $user->man(); }
+    elsif ( defined ${ $config->{'exists'} } ) {
         $authn->login_user();
         my $user = new Sakai::Nakamura::User( \$authn, $nakamura->{'Verbose'},
             $nakamura->{'Log'} );
