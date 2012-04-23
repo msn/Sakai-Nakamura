@@ -3,7 +3,7 @@
 use 5.008001;
 use strict;
 use warnings;
-use version; our $VERSION = qv('0.12');
+use version; our $VERSION = qv('0.13');
 use Carp;
 use Pod::Usage;
 use Sakai::Nakamura::Authz;
@@ -99,6 +99,10 @@ For full details run: perl nakamura.pl --man
 =item Output fuller help for this script:
 
  perl nakamura.pl man
+
+=item Output help for specific functions:
+
+ perl nakamura.pl [authz|content|group_member|group_role|group|json_query_servlet|ldap_synch|user|world] help
 
 =back
 

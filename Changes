@@ -1,5 +1,8 @@
 Revision history for Perl extension Sakai::Nakamura.
 
+0.13  Mon Apr 23 05:45:00 2012
+        - fixed some issues with command line support.
+
 0.12  Sun Apr 15 21:05:00 2012
         - command line support added in.
         - better distinguishing of groups / members

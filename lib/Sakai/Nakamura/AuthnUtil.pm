@@ -13,7 +13,7 @@ use base qw(Exporter);
 
 our @EXPORT_OK = ();
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 #{{{sub form_login_setup
 sub form_login_setup {
