@@ -21,17 +21,18 @@ our $VERSION = '0.13';
 
 sub add_setup {
     my (
-        $base_url,   $id,          $username,
-        $title,      $description, $tags,
-        $visibility, $joinability, $worldTemplate
+        $base_url,      $id,   $username,   $title,
+        $description,   $tags, $visibility, $joinability,
+        $worldTemplate, $creator_role
     ) = @_;
     if ( !defined $base_url ) { croak 'No base url defined to add against!'; }
     if ( !defined $id )       { croak 'No id defined to add!'; }
     if ( !defined $title )    { $title = $id; }
     if ( !defined $description ) { $description = $id; }
-    if ( !defined $tags )        { $tags        = $id; }
-    if ( !defined $visibility )  { $visibility  = 'public'; }
-    if ( !defined $joinability ) { $joinability = 'yes'; }
+    if ( !defined $tags )         { $tags         = $id; }
+    if ( !defined $visibility )   { $visibility   = 'public'; }
+    if ( !defined $joinability )  { $joinability  = 'yes'; }
+    if ( !defined $creator_role ) { $creator_role = 'manager'; }
 
     if ( !defined $worldTemplate ) {
         $worldTemplate = '/var/templates/worlds/group/simple-group';
@@ -59,7 +60,7 @@ sub add_setup {
       . $id
       . "\",\"toSend\":[]},\"usersToAdd\":[{\"userid\":\""
       . $username
-      . "\",\"role\":\"manager\"}]}']";
+      . "\",\"role\":\"$creator_role\"}]}']";
     return "post $base_url/system/world/create $post_variables";
 }
 

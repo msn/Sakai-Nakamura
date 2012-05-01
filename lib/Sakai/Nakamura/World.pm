@@ -53,9 +53,11 @@ sub set_results {
 
 #{{{sub add
 sub add {
-    my ( $world, $id, $title, $description, $tags, $visibility, $joinability,
-        $world_template )
-      = @_;
+    my (
+        $world,       $id,             $title,
+        $description, $tags,           $visibility,
+        $joinability, $world_template, $creator_role
+    ) = @_;
     my $res = Apache::Sling::Request::request(
         \$world,
         Sakai::Nakamura::WorldUtil::add_setup(
@@ -63,7 +65,7 @@ sub add {
             ${ $world->{'Authn'} }->{'Username'}, $title,
             $description,                         $tags,
             $visibility,                          $joinability,
-            $world_template
+            $world_template,                      $creator_role
         )
     );
     my $success = Sakai::Nakamura::WorldUtil::add_eval($res);
@@ -123,6 +125,7 @@ sub add_from_file {
                     my $visibility;
                     my $joinability;
                     my $world_template;
+                    my $creator_role;
 
                     for ( my $i = 1 ; $i < $number_of_columns ; $i++ ) {
                         my $heading = $column_headings[$i];
@@ -155,13 +158,18 @@ sub add_from_file {
                         {
                             $world_template = $columns[$i];
                         }
+                        elsif (
+                            $heading =~ /^[Cc][Rr][Ee][Aa][Tt][Oo][Rr]$/msx )
+                        {
+                            $creator_role = $columns[$i];
+                        }
                         else {
                             croak
 "Unsupported column heading \"$heading\" - please use: \"id\", \"title\", \"description\", \"tags\", \"visibility\", \"joinability\", \"worldtemplate\"";
                         }
                     }
                     $world->add( $id, $title, $description, $tags, $visibility,
-                        $joinability, $world_template );
+                        $joinability, $world_template, $creator_role );
                     Apache::Sling::Print::print_result($world);
                 }
                 else {
@@ -203,7 +211,10 @@ sub config {
         'man|M',              'pass|p=s',
         'threads|t=s',        'url|U=s',
         'user|u=s',           'verbose|v+',
-        'add|a',              'additions|A=s',
+        'add|a=s',            'additions|A=s',
+        'math-course',        'basic-course',
+        'simple-group',       'research-support',
+        'research-project',   'creator-role|C=s',
         'copy|c',             'delete|d',
         'exists|e',           'filename|n=s',
         'local|l=s',          'move|m',
@@ -211,7 +222,8 @@ sub config {
         'remote-source|S=s',  'replace|R',
         'view|V',             'view-copyright=s',
         'view-description=s', 'view-tags=s',
-        'view-title=s',       'view-visibility=s'
+        'view-title=s',       'view-visibility=s',
+        'world-template|w=s'
     ) or $class->help();
 
     return $world_config;
@@ -224,7 +236,13 @@ sub config {
 sub config_hash {
     my ( $class, $nakamura, @ARGV ) = @_;
     my $add;
+    my $math_course;
+    my $basic_course;
+    my $simple_group;
+    my $research_support;
+    my $research_project;
     my $additions;
+    my $creator_role;
     my $id;
     my $title;
     my $description;
@@ -233,23 +251,29 @@ sub config_hash {
     my $joinability;
     my $world_template;
     my %world_config = (
-        'auth'           => \$nakamura->{'Auth'},
-        'help'           => \$nakamura->{'Help'},
-        'log'            => \$nakamura->{'Log'},
-        'man'            => \$nakamura->{'Man'},
-        'pass'           => \$nakamura->{'Pass'},
-        'threads'        => \$nakamura->{'Threads'},
-        'url'            => \$nakamura->{'URL'},
-        'user'           => \$nakamura->{'User'},
-        'verbose'        => \$nakamura->{'Verbose'},
-        'add'            => \$add,
-        'additions'      => \$additions,
-        'title'          => \$title,
-        'description'    => \$description,
-        'tags'           => \$tags,
-        'visibility'     => \$visibility,
-        'joinability'    => \$joinability,
-        'world_template' => \$world_template
+        'auth'             => \$nakamura->{'Auth'},
+        'help'             => \$nakamura->{'Help'},
+        'log'              => \$nakamura->{'Log'},
+        'man'              => \$nakamura->{'Man'},
+        'pass'             => \$nakamura->{'Pass'},
+        'threads'          => \$nakamura->{'Threads'},
+        'url'              => \$nakamura->{'URL'},
+        'user'             => \$nakamura->{'User'},
+        'verbose'          => \$nakamura->{'Verbose'},
+        'add'              => \$add,
+        'math-course'      => \$math_course,
+        'basic-course'     => \$basic_course,
+        'simple-group'     => \$simple_group,
+        'research-support' => \$research_support,
+        'research-project' => \$research_project,
+        'additions'        => \$additions,
+        'creator-role'     => \$creator_role,
+        'title'            => \$title,
+        'description'      => \$description,
+        'tags'             => \$tags,
+        'visibility'       => \$visibility,
+        'joinability'      => \$joinability,
+        'world-template'   => \$world_template
     );
 
     return \%world_config;
@@ -265,8 +289,14 @@ Usage: perl $0 [-OPTIONS [-MORE_OPTIONS]] [--] [PROGRAM_ARG1 ...]
 The following options are accepted:
 
  --add or -a (worldid)               - add specified world.
+ --math-course                       - use math course template and lecturer role
+ --basic-course                      - use basic course template and lecturer role
+ --simple-group                      - use default simple group template and manager role
+ --research-support                  - use research support template and leadresearcher role
+ --research-project                  - use research project template and leadresearcher role
  --additions or -A (file)            - file containing list of worlds to be added.
  --auth (type)                       - Specify auth type. If ommitted, default is used.
+ --creator-role or -C role           - role to give world creator.
  --description or -d                 - description of world
  --help or -?                        - view the script synopsis and options.
  --joinability or -j (joinability)   - Joinability of world.
@@ -281,7 +311,7 @@ The following options are accepted:
  --user or -u (username)             - Name of user to perform any actions as.
  --verbose or -v or -vv or -vvv      - Increase verbosity of output.
  --visibility or -V (visibility)     - Visibility of world.
- --worldTemplate or -w               - World template to use.
+ --world-template or -w              - World template to use.
 
 Options may be merged together. -- stops processing of options.
 Space is not required between options and their arguments.
@@ -363,6 +393,31 @@ sub run {
     }
     else {
         $authn->login_user();
+        if ( defined ${ $config->{'math-course'} } ) {
+            ${ $config->{'world-template'} } =
+              '/var/templates/worlds/course/math-course';
+            ${ $config->{'creator-role'} } = 'lecturer';
+        }
+        elsif ( defined ${ $config->{'basic-course'} } ) {
+            ${ $config->{'world-template'} } =
+              '/var/templates/worlds/course/basic-course';
+            ${ $config->{'creator-role'} } = 'lecturer';
+        }
+        elsif ( defined ${ $config->{'simple-group'} } ) {
+            ${ $config->{'world-template'} } =
+              '/var/templates/worlds/group/simple-group';
+            ${ $config->{'creator-role'} } = 'manager';
+        }
+        elsif ( defined ${ $config->{'research-support'} } ) {
+            ${ $config->{'world-template'} } =
+              '/var/templates/worlds/research/research-support';
+            ${ $config->{'creator-role'} } = 'participant';
+        }
+        elsif ( defined ${ $config->{'research-project'} } ) {
+            ${ $config->{'world-template'} } =
+              '/var/templates/worlds/research/research-project';
+            ${ $config->{'creator-role'} } = 'leadresearcher';
+        }
         if ( defined ${ $config->{'add'} } ) {
             $world =
               new Sakai::Nakamura::World( \$authn, $nakamura->{'Verbose'},
@@ -374,7 +429,8 @@ sub run {
                 ${ $config->{'tags'} },
                 ${ $config->{'visibility'} },
                 ${ $config->{'joinability'} },
-                ${ $config->{'world_template'} }
+                ${ $config->{'world-template'} },
+                ${ $config->{'creator-role'} }
             );
             Apache::Sling::Print::print_result($world);
         }
