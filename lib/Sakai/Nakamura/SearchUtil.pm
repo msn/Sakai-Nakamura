@@ -15,6 +15,37 @@ our @EXPORT_OK = ();
 
 our $VERSION = '0.13';
 
+# Search across all types:
+
+#{{{sub search_all_all_setup
+
+sub search_all_all_setup {
+    my ( $base_url, $sort_on, $sort_order, $page, $items ) = @_;
+    if ( !defined $base_url ) {
+        croak 'No base url defined to search against!';
+    }
+    if ( !defined $query ) {
+        croak 'No query defined to search for!';
+    }
+    $sort_on    = defined $sort_on    ? $sort_on    : '_lastModified';
+    $sort_order = defined $sort_order ? $sort_order : 'desc';
+    $page       = defined $page       ? $page       : '0';
+    $items      = defined $items      ? $items      : '18';
+    return
+"get $base_url/var/search/general-all.json?q=*&sortOn=$sort_on&sortOrder=$sort_order&page=$page&items=$items";
+}
+
+#}}}
+
+#{{{sub search_all_all_eval
+
+sub search_all_all_eval {
+    my ($res) = @_;
+    return ( ${$res}->code eq '200' );
+}
+
+#}}}
+
 #{{{sub search_all_setup
 
 sub search_all_setup {
@@ -38,6 +69,37 @@ sub search_all_setup {
 #{{{sub search_all_eval
 
 sub search_all_eval {
+    my ($res) = @_;
+    return ( ${$res}->code eq '200' );
+}
+
+#}}}
+
+# Search across people:
+
+#{{{sub search_all_people_setup
+
+sub search_all_people_setup {
+    my ( $base_url, $sort_on, $sort_order, $page, $items ) = @_;
+    if ( !defined $base_url ) {
+        croak 'No base url defined to search against!';
+    }
+    if ( !defined $query ) {
+        croak 'No query defined to search for!';
+    }
+    $sort_on    = defined $sort_on    ? $sort_on    : '_lastModified';
+    $sort_order = defined $sort_order ? $sort_order : 'desc';
+    $page       = defined $page       ? $page       : '0';
+    $items      = defined $items      ? $items      : '18';
+    return
+"get $base_url/var/search/users-all.json?q=*&sortOn=$sort_on&sortOrder=$sort_order&page=$page&items=$items";
+}
+
+#}}}
+
+#{{{sub search_all_people_eval
+
+sub search_all_people_eval {
     my ($res) = @_;
     return ( ${$res}->code eq '200' );
 }
@@ -73,6 +135,37 @@ sub search_people_eval {
 
 #}}}
 
+# Search across content:
+
+#{{{sub search_all_content_setup
+
+sub search_all_content_setup {
+    my ( $base_url, $sort_on, $sort_order, $page, $items ) = @_;
+    if ( !defined $base_url ) {
+        croak 'No base url defined to search against!';
+    }
+    if ( !defined $query ) {
+        croak 'No query defined to search for!';
+    }
+    $sort_on    = defined $sort_on    ? $sort_on    : '_lastModified';
+    $sort_order = defined $sort_order ? $sort_order : 'desc';
+    $page       = defined $page       ? $page       : '0';
+    $items      = defined $items      ? $items      : '18';
+    return
+"get $base_url/var/search/pool/all-all.json?q=*&sortOn=$sort_on&sortOrder=$sort_order&page=$page&items=$items";
+}
+
+#}}}
+
+#{{{sub search_all_content_eval
+
+sub search_all_content_eval {
+    my ($res) = @_;
+    return ( ${$res}->code eq '200' );
+}
+
+#}}}
+
 #{{{sub search_content_setup
 
 sub search_content_setup {
@@ -102,6 +195,37 @@ sub search_content_eval {
 
 #}}}
 
+# Search across worlds:
+
+#{{{sub search_all_world_setup
+
+sub search_all_world_setup {
+    my ( $base_url, $world, $sort_on, $sort_order, $page, $items ) = @_;
+    if ( !defined $base_url ) {
+        croak 'No base url defined to search against!';
+    }
+    if ( !defined $query ) {
+        croak 'No query defined to search for!';
+    }
+    $sort_on    = defined $sort_on    ? $sort_on    : '_lastModified';
+    $sort_order = defined $sort_order ? $sort_order : 'desc';
+    $page       = defined $page       ? $page       : '0';
+    $items      = defined $items      ? $items      : '18';
+    return "get
+$base_url/var/search/groups-all.json?q=*&sortOn=$sort_on&sortOrder=$sort_order&category=$world&page=$page&items=$items";
+}
+
+#}}}
+
+#{{{sub search_all_world_eval
+
+sub search_all_world_eval {
+    my ($res) = @_;
+    return ( ${$res}->code eq '200' );
+}
+
+#}}}
+
 #{{{sub search_world_setup
 
 sub search_world_setup {
@@ -116,8 +240,7 @@ sub search_world_setup {
     $sort_order = defined $sort_order ? $sort_order : 'desc';
     $page       = defined $page       ? $page       : '0';
     $items      = defined $items      ? $items      : '18';
-    return "get
-$base_url/var/search/groups.infinity.json?q=$query&sortOn=$sort_on&sortOrder=$sort_order&category=$world&page=$page&items=$items";
+    return "get $base_url/var/search/groups.infinity.json?q=$query&sortOn=$sort_on&sortOrder=$sort_order&category=$world&page=$page&items=$items";
 }
 
 #}}}
